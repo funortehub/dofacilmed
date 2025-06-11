@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="D.O Fácil - Auxílio no preenchimento da Declaração de Óbito">
     <meta name="theme-color" content="#0a192f">
-    <title>D.O Fácil</title>
+    
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
+    
+    <title>D.O Fácil</title>
+    
+    <!-- Ícones PWA -->
     <link rel="icon" type="image/jpeg" href="https://i.imgur.com/SIoojrl.jpeg">
     <link rel="apple-touch-icon" href="https://i.imgur.com/SIoojrl.jpeg">
+    
+    <!-- Recursos Externos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
     <style>
         :root {
             --primary-dark: #0a192f;
@@ -1557,7 +1565,7 @@
             let displayText = '';
             
             switch(type) {
-                case 'academico':
+                case 'academico': 
                     displayText = 'Acadêmico treinante';
                     break;
                 case 'medico':
@@ -2043,50 +2051,18 @@
             }
         }
         
-        // Verificar se é a primeira visita
-        window.onload = function() {
-            // Inicializar a tela de DO se necessário
-            if (window.location.hash === '#do') {
-                navigateTo('do-screen');
-            }
-            
-            // Registrar Service Worker para PWA
-            if ('serviceWorker' in navigator) {
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker registrado', reg))
-                    .catch(err => console.log('Falha ao registrar Service Worker', err));
-            }
-            
-            // Impedir zoom em dispositivos móveis
-            document.addEventListener('gesturestart', function(e) {
-                e.preventDefault();
+                    .then(reg => console.log('Service Worker registrado com sucesso', reg))
+                    .catch(err => console.log('Falha no registro do Service Worker', err));
             });
-        };
-
-        // Adicionar botão de instalação PWA
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // Previne o prompt automático
+        }
+        
+        // Impedir zoom em dispositivos móveis
+        document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
-            
-            // Armazena o evento para usar depois
-            window.deferredPrompt = e;
-            
-            // Mostra o botão de instalação
-            const installButton = document.createElement('button');
-            installButton.className = 'btn';
-            installButton.innerHTML = '<i class="fas fa-download"></i> Instalar App';
-            installButton.style.marginTop = '10px';
-            installButton.onclick = () => {
-                window.deferredPrompt.prompt();
-                window.deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Usuário aceitou a instalação');
-                    }
-                    window.deferredPrompt = null;
-                });
-            };
-            
-            document.querySelector('#welcome-screen .btn-container').appendChild(installButton);
         });
     </script>
 </body>
