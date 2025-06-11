@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="D.O Fácil - Auxílio no preenchimento da Declaração de Óbito">
+    <meta name="theme-color" content="#0a192f">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <title>D.O Fácil</title>
+    
+    <!-- Ícones PWA -->
+    <link rel="icon" type="image/jpeg" href="https://i.imgur.com/SIoojrl.jpeg">
+    <link rel="apple-touch-icon" href="https://i.imgur.com/SIoojrl.jpeg">
+    
+    <!-- Recursos Externos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-dark: #0a192f;
+            --primary-blue: #112240;
+            --accent-blue: #64ffda;
+            --white: #ffffff;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #333333;
+            --warning: #ff6b6b;
+            --success: #4caf50;
+            --text-dark: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Roboto', 'Open Sans', sans-serif;
+            background-color: var(--primary-dark);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .active {
+            display: flex;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logo:hover {
+            opacity: 0.8;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: var(--accent-blue);
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+        }
+        
+        .user-info {
+            font-size: 14px;
+            background-color: var(--primary-blue);
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .nina-assistant {
+            display: flex;
+            margin-bottom: 25px;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .nina-avatar {
+            width: 70px;
+            height: 70px;
+            background-color: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--accent-blue);
+            flex-shrink: 0;
+        }
+        
+        .nina-avatar i {
+            font-size: 32px;
+            color: var(--white);
+        }
+        
+        .speech-bubble {
+            background-color: var(--primary-blue);
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            max-width: 85%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .speech-bubble:after {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 20px;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid var(--primary-blue);
+        }
+        
+        .speech-text {
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .typing {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 3s steps(40, end);
+        }
+        
+        .content {
+            background-color: var(--primary-blue);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .title i {
+            font-size: 28px;
+        }
+        
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background-color: var(--accent-blue);
+            color: var(--primary-dark);
+            border: none;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-align: left;
+        }
+        
+        .btn:hover {
+            background-color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn i {
+            font-size: 20px;
+        }
+        
+        .option-btn {
+            background-color: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        .option-btn:hover {
+            background-color: rgba(100, 255, 218, 0.1);
+        }
+        
+        .back-btn {
+            background-color: transparent;
+            color: var(--accent-blue);
+            border: 2px solid var(--accent-blue);
+            margin-top: 20px;
+        }
+        
+        .alert {
+            background-color: rgba(255, 107, 107, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .alert i {
+            color: var(--warning);
+            font-size: 20px;
+            margin-top: 3px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            background-color: var(--light-gray);
+            color: var(--text-dark);
+            font-size: 16px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.25);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .data-card {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .data-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .data-card ul {
+            padding-left: 20px;
+        }
+        
+        .data-card li {
+            margin-bottom: 8px;
+        }
+        
+        .progress-container {
+            margin: 20px 0;
+            position: sticky;
+            top: 0;
+            background: var(--primary-dark);
+            z-index: 10;
+            padding: 10px 0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-blue);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            color: var(--accent-blue);
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 70px;
+        }
+        
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(100, 255, 218, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .step.active .step-circle {
+            background-color: var(--accent-blue);
+            color: var(--primary-dark);
+        }
+        
+        .step-label {
+            font-size: 12px;
+            text-align: center;
+            color: var(--medium-gray);
+        }
+        
+        .step.active .step-label {
+            color: var(--accent-blue);
+        }
+        
+        .dash-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .dash-card {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dash-card h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .dash-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .dash-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .dash-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .dash-list li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Estilos para o histórico */
+        .history-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .history-item {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+        }
+        
+        .history-item:hover {
+            background-color: rgba(100, 255, 218, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .history-name {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--accent-blue);
+        }
+        
+        .history-date {
+            font-size: 14px;
+            color: var(--medium-gray);
+        }
+        
+        .history-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(100, 255, 218, 0.2);
+        }
+        
+        .empty-history {
+            text-align: center;
+            padding: 30px;
+            color: var(--medium-gray);
+        }
+        
+        .empty-history i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+        }
+
+        /* Estilos para a tela de resumo */
+        .summary-container {
+            background-color: var(--primary-blue);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .summary-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--accent-blue);
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .summary-content {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .summary-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .summary-item {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        
+        .summary-label {
+            font-weight: 600;
+            min-width: 180px;
+            color: var(--accent-blue);
+        }
+        
+        .summary-value {
+            flex: 1;
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 10px;
+            border: 1px solid var(--success);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .success-message i {
+            color: var(--success);
+            font-size: 24px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: var(--medium-gray);
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .nina-assistant {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .nina-avatar {
+                margin-bottom: 10px;
+            }
+            
+            .speech-bubble {
+                max-width: 100%;
+            }
+            
+            .speech-bubble:after {
+                display: none;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .dash-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .step-indicator {
+                gap: 3px;
+            }
+            
+            .step {
+                min-width: 45px;
+            }
+            
+            .step-label {
+                font-size: 10px;
+            }
+            
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .history-actions {
+                align-self: flex-end;
+            }
+            
+            .summary-item {
+                flex-direction: column;
+            }
+            
+            .summary-label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Tela 1: Boas-Vindas -->
+        <section id="welcome-screen" class="screen active">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text typing">Olá! Eu sou a Nina. Vou te ajudar no preenchimento da DO.</p>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="title">Preencha a Declaração de Óbito com confiança</h2>
+                <p>O D.O Fácil é um aplicativo desenvolvido para guiar profissionais de saúde no preenchimento correto e completo da Declaração de Óbito, com foco em precisão e conformidade com as normas.</p>
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>Este aplicativo não substitui o conhecimento médico, mas serve como guia para auxiliar no preenchimento correto da DO.</div>
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn" onclick="navigateTo('user-screen')">
+                    <i class="fas fa-play-circle"></i> Iniciar
+                </button>
+            </div>
+        </section>
+        
+        <!-- Tela 2: Identificação do Usuário -->
+        <section id="user-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text">Vamos começar! Por favor, identifique-se para que eu possa adaptar minhas orientações ao seu perfil.</p>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="title"><i class="fas fa-user"></i> Quem é você?</h2>
+                
+                <div class="btn-container">
+                    <button class="btn option-btn" onclick="setUserType('academico')">
+                        <i class="fas fa-user-graduate"></i> Acadêmico treinante
+                    </button>
+                    <button class="btn option-btn" onclick="setUserType('medico')">
+                        <i class="fas fa-user-md"></i> Médico recém-formado
+                    </button>
+                    <button class="btn option-btn" onclick="setUserType('especialista')">
+                        <i class="fas fa-user-tie"></i> Especialista
+                    </button>
+                </div>
+            </div>
+            
+            <button class="btn back-btn" onclick="navigateTo('welcome-screen')">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </section>
+        
+        <!-- Tela 3: Escolha de Ação -->
+        <section id="action-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+                <div id="user-display" class="user-info">
+                    <i class="fas fa-user"></i> <span>Médico recém-formado</span>
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text">Como posso ajudá-lo hoje?</p>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="title"><i class="fas fa-tasks"></i> O que você gostaria de fazer?</h2>
+                
+                <div class="btn-container">
+                    <button class="btn" onclick="navigateTo('do-screen')">
+                        <i class="fas fa-file-alt"></i> Preencher DO
+                    </button>
+                    <button class="btn" onclick="navigateTo('data-screen')">
+                        <i class="fas fa-chart-bar"></i> Consultar dados epidemiológicos
+                    </button>
+                    <button class="btn" onclick="navigateTo('law-screen')">
+                        <i class="fas fa-balance-scale"></i> Ver legislação e orientações
+                    </button>
+                    <button class="btn" onclick="navigateTo('history-screen')">
+                        <i class="fas fa-history"></i> Histórico de Declarações
+                    </button>
+                </div>
+            </div>
+            
+            <button class="btn back-btn" onclick="navigateTo('user-screen')">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </section>
+        
+        <!-- Tela 4: Preenchimento da DO -->
+        <section id="do-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+                <div id="do-user-display" class="user-info">
+                    <i class="fas fa-user"></i> <span>Médico recém-formado</span>
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text" id="nina-do-text">Vamos preencher a Declaração de Óbito. Vou guiá-lo passo a passo.</p>
+                </div>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text">Bloco I de IX</div>
+                <div class="step-indicator">
+                    <div class="step active" data-step="1">
+                        <div class="step-circle">I</div>
+                        <div class="step-label">Identificação</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-circle">II</div>
+                        <div class="step-label">Residência</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-circle">III</div>
+                        <div class="step-label">Ocorrência</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-circle">IV</div>
+                        <div class="step-label">Materno</div>
+                    </div>
+                    <div class="step" data-step="5">
+                        <div class="step-circle">V</div>
+                        <div class="step-label">Causas</div>
+                    </div>
+                    <div class="step" data-step="6">
+                        <div class="step-circle">VI</div>
+                        <div class="step-label">Médico</div>
+                    </div>
+                    <div class="step" data-step="7">
+                        <div class="step-circle">VII</div>
+                        <div class="step-label">Causas Ext.</div>
+                    </div>
+                    <div class="step" data-step="8">
+                        <div class="step-circle">VIII</div>
+                        <div class="step-label">Cartório</div>
+                    </div>
+                    <div class="step" data-step="9">
+                        <div class="step-circle">IX</div>
+                        <div class="step-label">Local. sem Méd.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content" id="do-content">
+                <!-- Conteúdo dinâmico para cada bloco -->
+            </div>
+            
+            <div class="btn-container" id="do-buttons">
+                <!-- Botões dinâmicos -->
+            </div>
+        </section>
+        
+        <!-- Tela 5: Dados Epidemiológicos -->
+        <section id="data-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-chart-bar"></i> Dados Epidemiológicos
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text">Aqui estão os dados epidemiológicos atualizados. Essas informações podem ajudar na vigilância em saúde.</p>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico</h2>
+                
+                <div class="form-group">
+                    <label for="date-select">Selecione a data:</label>
+                    <input type="date" id="date-select" class="form-control" value="2023-10-15">
+                </div>
+                
+                <div class="dash-container">
+                    <div class="dash-card">
+                        <h3><i class="fas fa-skull"></i> Total de Óbitos</h3>
+                        <div class="dash-value">142</div>
+                        <p>Registrados no dia selecionado</p>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-heartbeat"></i> Mortes Naturais</h3>
+                        <div class="dash-value">89</div>
+                        <p>Causas mais prevalentes:</p>
+                        <ul class="dash-list">
+                            <li>Cardiovasculares <span>32%</span></li>
+                            <li>Neoplasias <span>28%</span></li>
+                            <li>Respiratórias <span>18%</span></li>
+                            <li>Outras <span>22%</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Mortes Suspeitas</h3>
+                        <div class="dash-value">24</div>
+                        <p>Principais origens:</p>
+                        <ul class="dash-list">
+                            <li>Infecções <span>42%</span></li>
+                            <li>Toxicológicas <span>25%</span></li>
+                            <li>Indeterminadas <span>33%</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-car-crash"></i> Mortes Violentas</h3>
+                        <div class="dash-value">29</div>
+                        <p>Distribuição por tipo:</p>
+                        <ul class="dash-list">
+                            <li>Acidentes <span>48%</span></li>
+                            <li>Suicídios <span>24%</span></li>
+                            <li>Homicídios <span>28%</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-file-medical"></i> Origem das DOs</h3>
+                        <div class="dash-value">142</div>
+                        <p>Distribuição por origem:</p>
+                        <ul class="dash-list">
+                            <li>Médico assistente <span>62%</span></li>
+                            <li>SVO <span>22%</span></li>
+                            <li>IML <span>16%</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn back-btn" onclick="navigateTo('action-screen')">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </section>
+        
+        <!-- Tela 6: Legislação -->
+        <section id="law-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-balance-scale"></i> Legislação
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text">É importante conhecer as diretrizes legais para o preenchimento da Declaração de Óbito.</p>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="title"><i class="fas fa-gavel"></i> Legislação e Orientações Finais</h2>
+                
+                <div class="data-card">
+                    <h3>Responsabilidade Legal</h3>
+                    <p>O preenchimento da Declaração de Óbito é um ato médico de responsabilidade legal e deve ser feito com atenção e precisão.</p>
+                </div>
+                
+                <div class="data-card">
+                    <h3>Regras Gerais</h3>
+                    <ul>
+                        <li>A DO deve ser preenchida pelo médico que assistiu o paciente na última doença</li>
+                        <li>Em caso de morte violenta ou suspeita, comunicar imediatamente à autoridade policial</li>
+                        <li>O corpo só pode ser liberado após a emissão da DO</li>
+                    </ul>
+                </div>
+                
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        <strong>Atenção:</strong> A lei prevê que, em localidades sem médicos, a DO seja preenchida pelo cartório, 
+                        na presença do declarante e de duas pessoas idôneas, maiores de idade.
+                    </div>
+                </div>
+                
+                <div class="data-card">
+                    <h3>Orientações Importantes</h3>
+                    <ul>
+                        <li>Jamais preencha a DO sem ver o cadáver</li>
+                        <li>Verifique cuidadosamente a identidade do falecido</li>
+                        <li>Em caso de dúvida sobre a causa da morte, consulte um colega ou o serviço de verificação de óbitos</li>
+                        <li>Mantenha cópia da DO por pelo menos 5 anos</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <button class="btn back-btn" onclick="navigateTo('action-screen')">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </section>
+        
+        <!-- Tela 7: Histórico de Declarações -->
+        <section id="history-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-history"></i> Histórico
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text">Aqui estão todas as declarações de óbito que você preencheu.</p>
+                </div>
+            </div>
+            
+            <div class="content">
+                <h2 class="title"><i class="fas fa-file-medical"></i> Histórico de Declarações</h2>
+                
+                <div id="history-list" class="history-container">
+                    <!-- Histórico será carregado aqui -->
+                </div>
+            </div>
+            
+            <button class="btn back-btn" onclick="navigateTo('action-screen')">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </section>
+        
+        <!-- Nova Tela 8: Resumo da DO -->
+        <section id="summary-screen" class="screen">
+            <header>
+                <div class="logo" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <h1 class="logo-text">D.O Fácil</h1>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-file-medical"></i> Resumo
+                </div>
+            </header>
+            
+            <div class="nina-assistant">
+                <div class="nina-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="speech-bubble">
+                    <p class="speech-text">Resumo da Declaração de Óbito preenchida.</p>
+                </div>
+            </div>
+            
+            <div class="summary-container">
+                <h2 class="summary-title">Resumo da Declaração de Óbito</h2>
+                
+                <div class="success-message">
+                    <i class="fas fa-check-circle"></i>
+                    <div>Declaração de Óbito salva com sucesso no histórico!</div>
+                </div>
+                
+                <div class="summary-content" id="summary-content">
+                    <!-- Resumo será gerado aqui -->
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button class="btn" onclick="navigateTo('welcome-screen')">
+                    <i class="fas fa-home"></i> Voltar ao Início
+                </button>
+                <button class="btn option-btn" onclick="navigateTo('history-screen')">
+                    <i class="fas fa-history"></i> Ver Histórico
+                </button>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>D.O Fácil &copy; 2025 - Auxiliando profissionais de saúde no preenchimento correto da Declaração de Óbito</p>
+    </footer>
+    
+    <script>
+        // Dados para preenchimento da DO com todos os 9 blocos
+        const doSections = [
+            {
+                title: "Bloco I: Identificação do paciente",
+                ninaText: "Esse espaço é reservado para a identificação do paciente. Tenha em mãos um documento com foto e converse com um familiar calmo.",
+                content: `
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div><strong>Atenção:</strong> Jamais preencha a DO sem ver o cadáver!</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patient-name">Nome completo do falecido:</label>
+                        <input type="text" id="patient-name" class="form-control" placeholder="Digite o nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patient-doc">Documento de identificação (RG/CPF):</label>
+                        <input type="text" id="patient-doc" class="form-control" placeholder="Número do documento">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mother-name">Nome da mãe:</label>
+                        <input type="text" id="mother-name" class="form-control" placeholder="Nome completo da mãe">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="father-name">Nome do pai:</label>
+                        <input type="text" id="father-name" class="form-control" placeholder="Nome completo do pai">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birth-date">Data de nascimento:</label>
+                        <input type="date" id="birth-date" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="death-date">Data do óbito:</label>
+                        <input type="date" id="death-date" class="form-control">
+                    </div>
+                `,
+                buttons: [
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco II: Residência",
+                ninaText: "Informe o endereço de residência do falecido.",
+                content: `
+                    <div class="form-group">
+                        <label for="res-street">Logradouro:</label>
+                        <input type="text" id="res-street" class="form-control" placeholder="Rua, avenida, etc.">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="res-number">Número:</label>
+                        <input type="text" id="res-number" class="form-control" placeholder="Número">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="res-complement">Complemento:</label>
+                        <input type="text" id="res-complement" class="form-control" placeholder="Complemento">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="res-district">Bairro:</label>
+                        <input type="text" id="res-district" class="form-control" placeholder="Bairro">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="res-city">Cidade:</label>
+                        <input type="text" id="res-city" class="form-control" placeholder="Cidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="res-state">Estado:</label>
+                        <select id="res-state" class="form-control">
+                            <option value="">Selecione o estado</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="PR">Paraná</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="res-cep">CEP:</label>
+                        <input type="text" id="res-cep" class="form-control" placeholder="CEP">
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco III: Ocorrência",
+                ninaText: "Informe o local onde ocorreu o óbito.",
+                content: `
+                    <div class="form-group">
+                        <label for="death-place">Local do óbito:</label>
+                        <select id="death-place" class="form-control">
+                            <option value="">Selecione o local</option>
+                            <option value="hospital">Hospital</option>
+                            <option value="domicilio">Domicílio</option>
+                            <option value="via_publica">Via pública</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="death-institution">Nome da instituição (se aplicável):</label>
+                        <input type="text" id="death-institution" class="form-control" placeholder="Nome do hospital ou instituição">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="death-address">Endereço completo do local:</label>
+                        <input type="text" id="death-address" class="form-control" placeholder="Rua, número, bairro, cidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="death-city">Cidade:</label>
+                        <input type="text" id="death-city" class="form-control" placeholder="Cidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="death-state">Estado:</label>
+                        <select id="death-state" class="form-control">
+                            <option value="">Selecione o estado</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="PR">Paraná</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                        </select>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="violent-death">
+                        <label for="violent-death">Óbito com causa violenta ou suspeita</label>
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco IV: Dados materno-infantis",
+                ninaText: "Atente-se à idade da vítima! Esse bloco é reservado a dados epidemiológicos materno-infantis.",
+                content: `
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div><strong>Importante:</strong> Preencha este bloco apenas se o falecido for criança menor de 1 ano ou mulher em idade fértil (10-49 anos).</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mother-age">Idade da mãe (se criança):</label>
+                        <input type="number" id="mother-age" class="form-control" placeholder="Idade em anos">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="pregnancy">A morte está relacionada à gravidez?</label>
+                        <select id="pregnancy" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                            <option value="ignorado">Ignorado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="dn-number">Número da Declaração de Nascido Vivo (DN):</label>
+                        <input type="text" id="dn-number" class="form-control" placeholder="Número da DN">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="birth-weight">Peso ao nascer (gramas):</label>
+                        <input type="number" id="birth-weight" class="form-control" placeholder="Peso em gramas">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="prenatal">Teve acompanhamento pré-natal?</label>
+                        <select id="prenatal" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="sim">Sim</option>
+                            <option value="nao">Não</option>
+                            <option value="ignorado">Ignorado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="delivery-type">Tipo de parto:</label>
+                        <select id="delivery-type" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="vaginal">Vaginal</option>
+                            <option value="cesarea">Cesárea</option>
+                            <option value="ignorado">Ignorado</option>
+                        </select>
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco V: Condições e causas do óbito",
+                ninaText: "Descreva as condições e causas do óbito conforme a sequência de eventos.",
+                content: `
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div><strong>Importante:</strong> Preencha a causa básica e as causas associadas.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="immediate-cause">Causa imediata (a):</label>
+                        <input type="text" id="immediate-cause" class="form-control" placeholder="Ex: Parada cardiorrespiratória">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="antecedent-cause">Causa antecedente (b):</label>
+                        <input type="text" id="antecedent-cause" class="form-control" placeholder="Ex: Infarto agudo do miocárdio">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="underlying-cause">Causa básica (c):</label>
+                        <input type="text" id="underlying-cause" class="form-control" placeholder="Ex: Doença isquêmica do coração">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="other-conditions">Outras condições:</label>
+                        <textarea id="other-conditions" class="form-control" placeholder="Outras condições significativas que contribuíram para o óbito"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="death-manner">Tipo de morte:</label>
+                        <select id="death-manner" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="natural">Natural</option>
+                            <option value="acidente">Acidente</option>
+                            <option value="suicidio">Suicídio</option>
+                            <option value="homicidio">Homicídio</option>
+                            <option value="ignorado">Ignorado</option>
+                        </select>
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco VI: Dados do médico",
+                ninaText: "Preencha seus dados como médico declarante.",
+                content: `
+                    <div class="form-group">
+                        <label for="doctor-name">Nome do médico:</label>
+                        <input type="text" id="doctor-name" class="form-control" placeholder="Nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-crm">CRM:</label>
+                        <input type="text" id="doctor-crm" class="form-control" placeholder="Número do CRM">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="doctor-uf">UF do CRM:</label>
+                        <select id="doctor-uf" class="form-control">
+                            <option value="">Selecione a UF</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="PR">Paraná</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="signature-date">Data de assinatura:</label>
+                        <input type="date" id="signature-date" class="form-control">
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco VII: Causas externas",
+                ninaText: "Preencha apenas se a morte foi por causas externas (acidentes, violências, etc.).",
+                content: `
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div><strong>Atenção:</strong> Este bloco só deve ser preenchido em caso de morte por causas externas.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accident-date">Data do acidente/agressão:</label>
+                        <input type="date" id="accident-date" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accident-time">Hora do acidente/agressão:</label>
+                        <input type="time" id="accident-time" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accident-place">Local do acidente/agressão:</label>
+                        <input type="text" id="accident-place" class="form-control" placeholder="Local">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accident-type">Tipo de acidente/agressão:</label>
+                        <select id="accident-type" class="form-control">
+                            <option value="">Selecione</option>
+                            <option value="transito">Acidente de trânsito</option>
+                            <option value="queda">Queda</option>
+                            <option value="afogamento">Afogamento</option>
+                            <option value="intoxicacao">Intoxicação</option>
+                            <option value="agressao">Agressão física</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accident-description">Descrição do ocorrido:</label>
+                        <textarea id="accident-description" class="form-control" placeholder="Descreva o ocorrido"></textarea>
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco VIII: Cartório",
+                ninaText: "Dados para registro no cartório.",
+                content: `
+                    <div class="form-group">
+                        <label for="registry-office">Cartório de registro:</label>
+                        <input type="text" id="registry-office" class="form-control" placeholder="Nome do cartório">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registry-city">Cidade do cartório:</label>
+                        <input type="text" id="registry-city" class="form-control" placeholder="Cidade">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registry-uf">UF do cartório:</label>
+                        <select id="registry-uf" class="form-control">
+                            <option value="">Selecione a UF</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="PR">Paraná</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registry-date">Data do registro:</label>
+                        <input type="date" id="registry-date" class="form-control">
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Próximo", action: "nextSection", icon: "arrow-right" }
+                ]
+            },
+            {
+                title: "Bloco IX: Localidade sem médico",
+                ninaText: "Preencha este bloco apenas se a declaração for preenchida em localidade sem médico.",
+                content: `
+                    <div class="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <div><strong>Nota:</strong> Este bloco deve ser preenchido apenas em localidades sem médicos, na presença do declarante e de duas testemunhas.</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="declarant-name">Nome do declarante:</label>
+                        <input type="text" id="declarant-name" class="form-control" placeholder="Nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="declarant-doc">Documento do declarante:</label>
+                        <input type="text" id="declarant-doc" class="form-control" placeholder="RG ou CPF">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="witness1-name">Nome da primeira testemunha:</label>
+                        <input type="text" id="witness1-name" class="form-control" placeholder="Nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="witness1-doc">Documento da primeira testemunha:</label>
+                        <input type="text" id="witness1-doc" class="form-control" placeholder="RG ou CPF">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="witness2-name">Nome da segunda testemunha:</label>
+                        <input type="text" id="witness2-name" class="form-control" placeholder="Nome completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="witness2-doc">Documento da segunda testemunha:</label>
+                        <input type="text" id="witness2-doc" class="form-control" placeholder="RG ou CPF">
+                    </div>
+                `,
+                buttons: [
+                    { text: "Anterior", action: "prevSection", icon: "arrow-left" },
+                    { text: "Concluir", action: "showSummary", icon: "check" }
+                ]
+            }
+        ];
+        
+        // Estado da aplicação
+        let currentSection = 0;
+        let userType = '';
+        let history = JSON.parse(localStorage.getItem('doHistory')) || [];
+        let currentDOData = null;
+        
+        // Navegação entre telas
+        function navigateTo(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            // Atualiza a barra de progresso quando entrar na tela de DO
+            if (screenId === 'do-screen') {
+                updateDOView();
+            }
+            
+            // Atualiza o histórico quando entrar na tela de histórico
+            if (screenId === 'history-screen') {
+                loadHistory();
+            }
+        }
+        
+        // Definir tipo de usuário
+        function setUserType(type) {
+            userType = type;
+            let displayText = '';
+            
+            switch(type) {
+                case 'academico': 
+                    displayText = 'Acadêmico treinante';
+                    break;
+                case 'medico':
+                    displayText = 'Médico recém-formado';
+                    break;
+                case 'especialista':
+                    displayText = 'Especialista';
+                    break;
+            }
+            
+            document.getElementById('user-display').innerHTML = `<i class="fas fa-user"></i> ${displayText}`;
+            document.getElementById('do-user-display').innerHTML = `<i class="fas fa-user"></i> ${displayText}`;
+            
+            navigateTo('action-screen');
+        }
+        
+        // Atualizar seção atual da DO
+        function updateDOView() {
+            const section = doSections[currentSection];
+            const doContent = document.getElementById('do-content');
+            const ninaText = document.getElementById('nina-do-text');
+            const buttonsContainer = document.getElementById('do-buttons');
+            
+            // Atualiza texto da Nina
+            ninaText.textContent = section.ninaText;
+            
+            // Atualiza conteúdo
+            doContent.innerHTML = `
+                <h2 class="title"><i class="fas fa-file-medical"></i> ${section.title}</h2>
+                ${section.content}
+            `;
+            
+            // Atualiza botões
+            buttonsContainer.innerHTML = '';
+            section.buttons.forEach(btn => {
+                const button = document.createElement('button');
+                button.className = `btn ${btn.action === 'prevSection' ? 'back-btn' : ''}`;
+                button.innerHTML = `<i class="fas fa-${btn.icon}"></i> ${btn.text}`;
+                button.onclick = function() {
+                    if (btn.action === 'nextSection') nextSection();
+                    else if (btn.action === 'prevSection') prevSection();
+                    else if (btn.action === 'showSummary') showSummary();
+                };
+                buttonsContainer.appendChild(button);
+            });
+            
+            // Atualiza progresso
+            updateProgress();
+        }
+        
+        // Avançar para próxima seção
+        function nextSection() {
+            if (currentSection < doSections.length - 1) {
+                currentSection++;
+                updateDOView();
+            }
+        }
+        
+        // Voltar para seção anterior
+        function prevSection() {
+            if (currentSection > 0) {
+                currentSection--;
+                updateDOView();
+            }
+        }
+        
+        // Coletar dados do formulário
+        function collectFormData() {
+            const formData = {};
+            
+            // Bloco I
+            formData.patientName = document.getElementById('patient-name').value || 'Não informado';
+            formData.patientDoc = document.getElementById('patient-doc').value || 'Não informado';
+            formData.motherName = document.getElementById('mother-name').value || 'Não informado';
+            formData.fatherName = document.getElementById('father-name').value || 'Não informado';
+            formData.birthDate = document.getElementById('birth-date').value || 'Não informado';
+            formData.deathDate = document.getElementById('death-date').value || 'Não informado';
+            
+            // Bloco II
+            formData.resStreet = document.getElementById('res-street').value || 'Não informado';
+            formData.resNumber = document.getElementById('res-number').value || 'Não informado';
+            formData.resComplement = document.getElementById('res-complement').value || 'Não informado';
+            formData.resDistrict = document.getElementById('res-district').value || 'Não informado';
+            formData.resCity = document.getElementById('res-city').value || 'Não informado';
+            formData.resState = document.getElementById('res-state').value || 'Não informado';
+            formData.resCep = document.getElementById('res-cep').value || 'Não informado';
+            
+            // Bloco III
+            formData.deathPlace = document.getElementById('death-place').value || 'Não informado';
+            formData.deathInstitution = document.getElementById('death-institution').value || 'Não informado';
+            formData.deathAddress = document.getElementById('death-address').value || 'Não informado';
+            formData.deathCity = document.getElementById('death-city').value || 'Não informado';
+            formData.deathState = document.getElementById('death-state').value || 'Não informado';
+            formData.violentDeath = document.getElementById('violent-death').checked ? 'Sim' : 'Não';
+            
+            // Bloco IV
+            formData.motherAge = document.getElementById('mother-age').value || 'Não aplicável';
+            formData.pregnancy = document.getElementById('pregnancy').value || 'Não aplicável';
+            formData.dnNumber = document.getElementById('dn-number').value || 'Não aplicável';
+            formData.birthWeight = document.getElementById('birth-weight').value || 'Não aplicável';
+            formData.prenatal = document.getElementById('prenatal').value || 'Não aplicável';
+            formData.deliveryType = document.getElementById('delivery-type').value || 'Não aplicável';
+            
+            // Bloco V
+            formData.immediateCause = document.getElementById('immediate-cause').value || 'Não informado';
+            formData.antecedentCause = document.getElementById('antecedent-cause').value || 'Não informado';
+            formData.underlyingCause = document.getElementById('underlying-cause').value || 'Não informado';
+            formData.otherConditions = document.getElementById('other-conditions').value || 'Não informado';
+            formData.deathManner = document.getElementById('death-manner').value || 'Não informado';
+            
+            // Bloco VI
+            formData.doctorName = document.getElementById('doctor-name').value || 'Não informado';
+            formData.doctorCrm = document.getElementById('doctor-crm').value || 'Não informado';
+            formData.doctorUf = document.getElementById('doctor-uf').value || 'Não informado';
+            formData.signatureDate = document.getElementById('signature-date').value || 'Não informado';
+            
+            // Bloco VII
+            formData.accidentDate = document.getElementById('accident-date').value || 'Não aplicável';
+            formData.accidentTime = document.getElementById('accident-time').value || 'Não aplicável';
+            formData.accidentPlace = document.getElementById('accident-place').value || 'Não aplicável';
+            formData.accidentType = document.getElementById('accident-type').value || 'Não aplicável';
+            formData.accidentDescription = document.getElementById('accident-description').value || 'Não aplicável';
+            
+            // Bloco VIII
+            formData.registryOffice = document.getElementById('registry-office').value || 'Não informado';
+            formData.registryCity = document.getElementById('registry-city').value || 'Não informado';
+            formData.registryUf = document.getElementById('registry-uf').value || 'Não informado';
+            formData.registryDate = document.getElementById('registry-date').value || 'Não informado';
+            
+            // Bloco IX
+            formData.declarantName = document.getElementById('declarant-name').value || 'Não aplicável';
+            formData.declarantDoc = document.getElementById('declarant-doc').value || 'Não aplicável';
+            formData.witness1Name = document.getElementById('witness1-name').value || 'Não aplicável';
+            formData.witness1Doc = document.getElementById('witness1-doc').value || 'Não aplicável';
+            formData.witness2Name = document.getElementById('witness2-name').value || 'Não aplicável';
+            formData.witness2Doc = document.getElementById('witness2-doc').value || 'Não aplicável';
+            
+            return formData;
+        }
+        
+        // Mostrar resumo da DO
+        function showSummary() {
+            currentDOData = collectFormData();
+            saveToHistory();
+            generateSummary(currentDOData);
+            navigateTo('summary-screen');
+        }
+        
+        // Gerar resumo da DO
+        function generateSummary(doData) {
+            const summaryContent = document.getElementById('summary-content');
+            
+            let summaryHTML = `
+                <div class="summary-section">
+                    <h3><i class="fas fa-user"></i> Identificação do Falecido</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Nome completo:</div>
+                        <div class="summary-value">${doData.patientName}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Documento:</div>
+                        <div class="summary-value">${doData.patientDoc}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Nome da mãe:</div>
+                        <div class="summary-value">${doData.motherName}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Nome do pai:</div>
+                        <div class="summary-value">${doData.fatherName}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Data de nascimento:</div>
+                        <div class="summary-value">${formatDate(doData.birthDate)}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Data do óbito:</div>
+                        <div class="summary-value">${formatDate(doData.deathDate)}</div>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3><i class="fas fa-home"></i> Residência</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Endereço:</div>
+                        <div class="summary-value">${doData.resStreet} ${doData.resNumber} ${doData.resComplement}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Bairro:</div>
+                        <div class="summary-value">${doData.resDistrict}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Cidade/UF:</div>
+                        <div class="summary-value">${doData.resCity}/${doData.resState}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">CEP:</div>
+                        <div class="summary-value">${doData.resCep}</div>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3><i class="fas fa-map-marker-alt"></i> Local da Ocorrência</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Local:</div>
+                        <div class="summary-value">${getDeathPlaceText(doData.deathPlace)}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Instituição:</div>
+                        <div class="summary-value">${doData.deathInstitution}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Endereço:</div>
+                        <div class="summary-value">${doData.deathAddress}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Cidade/UF:</div>
+                        <div class="summary-value">${doData.deathCity}/${doData.deathState}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Causa violenta:</div>
+                        <div class="summary-value">${doData.violentDeath}</div>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3><i class="fas fa-heartbeat"></i> Causas do Óbito</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Causa imediata:</div>
+                        <div class="summary-value">${doData.immediateCause}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Causa antecedente:</div>
+                        <div class="summary-value">${doData.antecedentCause}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Causa básica:</div>
+                        <div class="summary-value">${doData.underlyingCause}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Outras condições:</div>
+                        <div class="summary-value">${doData.otherConditions}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Tipo de morte:</div>
+                        <div class="summary-value">${getDeathMannerText(doData.deathManner)}</div>
+                    </div>
+                </div>
+                
+                <div class="summary-section">
+                    <h3><i class="fas fa-user-md"></i> Médico Declarante</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Nome:</div>
+                        <div class="summary-value">${doData.doctorName}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">CRM/UF:</div>
+                        <div class="summary-value">${doData.doctorCrm}/${doData.doctorUf}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Data de assinatura:</div>
+                        <div class="summary-value">${formatDate(doData.signatureDate)}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (doData.violentDeath === 'Sim') {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Causas Externas</h3>
+                        <div class="summary-item">
+                            <div class="summary-label">Data do ocorrido:</div>
+                            <div class="summary-value">${formatDate(doData.accidentDate)}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Hora do ocorrido:</div>
+                            <div class="summary-value">${doData.accidentTime}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Local:</div>
+                            <div class="summary-value">${doData.accidentPlace}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Tipo:</div>
+                            <div class="summary-value">${getAccidentTypeText(doData.accidentType)}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Descrição:</div>
+                            <div class="summary-value">${doData.accidentDescription}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            summaryHTML += `
+                <div class="summary-section">
+                    <h3><i class="fas fa-building"></i> Cartório</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Nome:</div>
+                        <div class="summary-value">${doData.registryOffice}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Cidade/UF:</div>
+                        <div class="summary-value">${doData.registryCity}/${doData.registryUf}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Data do registro:</div>
+                        <div class="summary-value">${formatDate(doData.registryDate)}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (doData.declarantName && doData.declarantName !== 'Não aplicável') {
+                summaryHTML += `
+                    <div class="summary-section">
+                        <h3><i class="fas fa-users"></i> Localidade sem Médico</h3>
+                        <div class="summary-item">
+                            <div class="summary-label">Declarante:</div>
+                            <div class="summary-value">${doData.declarantName}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Documento:</div>
+                            <div class="summary-value">${doData.declarantDoc}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Testemunha 1:</div>
+                            <div class="summary-value">${doData.witness1Name}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Documento:</div>
+                            <div class="summary-value">${doData.witness1Doc}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Testemunha 2:</div>
+                            <div class="summary-value">${doData.witness2Name}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Documento:</div>
+                            <div class="summary-value">${doData.witness2Doc}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            summaryContent.innerHTML = summaryHTML;
+        }
+        
+        // Funções auxiliares para texto
+        function getDeathPlaceText(value) {
+            const places = {
+                'hospital': 'Hospital',
+                'domicilio': 'Domicílio',
+                'via_publica': 'Via Pública',
+                'outro': 'Outro'
+            };
+            return places[value] || value;
+        }
+        
+        function getDeathMannerText(value) {
+            const manners = {
+                'natural': 'Natural',
+                'acidente': 'Acidente',
+                'suicidio': 'Suicídio',
+                'homicidio': 'Homicídio',
+                'ignorado': 'Ignorado'
+            };
+            return manners[value] || value;
+        }
+        
+        function getAccidentTypeText(value) {
+            const types = {
+                'transito': 'Acidente de Trânsito',
+                'queda': 'Queda',
+                'afogamento': 'Afogamento',
+                'intoxicacao': 'Intoxicação',
+                'agressao': 'Agressão Física',
+                'outro': 'Outro'
+            };
+            return types[value] || value;
+        }
+        
+        // Salvar no histórico
+        function saveToHistory() {
+            if (!currentDOData) return;
+            
+            const historyItem = {
+                id: Date.now(),
+                patientName: currentDOData.patientName,
+                deathDate: currentDOData.deathDate,
+                doctorName: currentDOData.doctorName,
+                timestamp: new Date().toISOString(),
+                data: currentDOData
+            };
+            
+            history.unshift(historyItem);
+            localStorage.setItem('doHistory', JSON.stringify(history));
+        }
+        
+        // Carregar histórico
+        function loadHistory() {
+            const historyList = document.getElementById('history-list');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-history">
+                        <i class="fas fa-file-medical"></i>
+                        <h3>Nenhuma declaração encontrada</h3>
+                        <p>Preencha uma declaração de óbito para começar seu histórico</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            historyList.innerHTML = '';
+            
+            history.forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div class="history-info">
+                        <div class="history-name">${item.patientName}</div>
+                        <div class="history-date">${formatDate(item.deathDate)} - Preenchido por: ${item.doctorName}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="action-btn" onclick="viewSummary('${item.id}')" title="Visualizar">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="action-btn" onclick="deleteHistoryItem('${item.id}')" title="Excluir">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Visualizar resumo salvo
+        function viewSummary(id) {
+            const item = history.find(i => i.id == id);
+            if (item) {
+                currentDOData = item.data;
+                generateSummary(currentDOData);
+                navigateTo('summary-screen');
+            }
+        }
+        
+        // Excluir item do histórico
+        function deleteHistoryItem(id) {
+            if (confirm('Tem certeza que deseja excluir este item do histórico?')) {
+                history = history.filter(item => item.id != id);
+                localStorage.setItem('doHistory', JSON.stringify(history));
+                loadHistory();
+            }
+        }
+        
+        // Atualizar barra de progresso
+        function updateProgress() {
+            const progress = ((currentSection + 1) / doSections.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.querySelector('.progress-text').textContent = `Bloco ${currentSection + 1} de ${doSections.length}`;
+            
+            // Atualizar indicadores de passo
+            document.querySelectorAll('.step').forEach((step, index) => {
+                if (index <= currentSection) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+        
+        // Formatar data para exibição
+        function formatDate(dateString) {
+            if (!dateString || dateString === 'Não informado') return dateString;
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                
+                return date.toLocaleDateString('pt-BR');
+            } catch (e) {
+                return dateString;
+            }
+        }
+        
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso', reg))
+                    .catch(err => console.log('Falha no registro do Service Worker', err));
+            });
+        }
+        
+        // Impedir zoom em dispositivos móveis
+        document.addEventListener('gesturestart', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
