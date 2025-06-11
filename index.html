@@ -5,23 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="D.O Fácil - Auxílio no preenchimento da Declaração de Óbito">
     <meta name="theme-color" content="#0a192f">
-    
-    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    
     <title>D.O Fácil</title>
     
-    <!-- Ícones PWA -->
-    <link rel="icon" type="image/jpeg" href="https://i.imgur.com/SIoojrl.jpeg">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/SIoojrl.jpeg">
-    
-    <!-- Recursos Externos -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- Ícones integrados como Data URIs -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📋</text></svg>">
     
     <style>
+        /* ESTILOS COMPLETOS INTEGRADOS */
         :root {
             --primary-dark: #0a192f;
             --primary-blue: #112240;
@@ -43,7 +34,7 @@
         }
         
         body {
-            font-family: 'Roboto', 'Open Sans', sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             background-color: var(--primary-dark);
             color: var(--white);
             line-height: 1.6;
@@ -136,11 +127,6 @@
             flex-shrink: 0;
         }
         
-        .nina-avatar i {
-            font-size: 32px;
-            color: var(--white);
-        }
-        
         .speech-bubble {
             background-color: var(--primary-blue);
             border-radius: 15px;
@@ -192,10 +178,6 @@
             gap: 10px;
         }
         
-        .title i {
-            font-size: 28px;
-        }
-        
         .btn-container {
             display: flex;
             flex-direction: column;
@@ -226,10 +208,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
-        .btn i {
-            font-size: 20px;
-        }
-        
         .option-btn {
             background-color: transparent;
             border: 2px solid var(--accent-blue);
@@ -256,12 +234,6 @@
             display: flex;
             gap: 10px;
             align-items: flex-start;
-        }
-        
-        .alert i {
-            color: var(--warning);
-            font-size: 20px;
-            margin-top: 3px;
         }
         
         .form-group {
@@ -511,12 +483,6 @@
             color: var(--medium-gray);
         }
         
-        .empty-history i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: var(--accent-blue);
-        }
-
         /* Estilos para a tela de resumo */
         .summary-container {
             background-color: var(--primary-blue);
@@ -583,11 +549,6 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-        }
-        
-        .success-message i {
-            color: var(--success);
-            font-size: 24px;
         }
         
         footer {
@@ -670,6 +631,62 @@
                 margin-bottom: 5px;
             }
         }
+
+        /* Ícones como pseudo-elementos */
+        .icon::before {
+            content: '';
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+        }
+
+        .icon-file::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+        }
+
+        .icon-user::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+        }
+
+        .icon-play::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+        }
+
+        .icon-chart::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z'/%3E%3C/svg%3E");
+        }
+
+        .icon-scale::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M10 18h5v-6h-5v6zm-6 0h5V5H4v13zm12 0h5v-6h-5v6z'/%3E%3C/svg%3E");
+        }
+
+        .icon-history::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z'/%3E%3C/svg%3E");
+        }
+
+        .icon-arrow-left::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z'/%3E%3C/svg%3E");
+        }
+
+        .icon-check::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z'/%3E%3C/svg%3E");
+        }
+
+        .icon-home::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E");
+        }
+
+        .icon-eye::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E");
+        }
+
+        .icon-trash::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2364ffda' d='M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z'/%3E%3C/svg%3E");
+        }
     </style>
 </head>
 <body>
@@ -678,14 +695,14 @@
         <section id="welcome-screen" class="screen active">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text typing">Olá! Eu sou a Nina. Vou te ajudar no preenchimento da DO.</p>
@@ -696,14 +713,14 @@
                 <h2 class="title">Preencha a Declaração de Óbito com confiança</h2>
                 <p>O D.O Fácil é um aplicativo desenvolvido para guiar profissionais de saúde no preenchimento correto e completo da Declaração de Óbito, com foco em precisão e conformidade com as normas.</p>
                 <div class="alert">
-                    <i class="fas fa-exclamation-circle"></i>
+                    <span>⚠️</span>
                     <div>Este aplicativo não substitui o conhecimento médico, mas serve como guia para auxiliar no preenchimento correto da DO.</div>
                 </div>
             </div>
             
             <div class="btn-container">
                 <button class="btn" onclick="navigateTo('user-screen')">
-                    <i class="fas fa-play-circle"></i> Iniciar
+                    <span class="icon icon-play"></span> Iniciar
                 </button>
             </div>
         </section>
@@ -712,14 +729,14 @@
         <section id="user-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text">Vamos começar! Por favor, identifique-se para que eu possa adaptar minhas orientações ao seu perfil.</p>
@@ -727,23 +744,23 @@
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-user"></i> Quem é você?</h2>
+                <h2 class="title"><span class="icon icon-user"></span> Quem é você?</h2>
                 
                 <div class="btn-container">
                     <button class="btn option-btn" onclick="setUserType('academico')">
-                        <i class="fas fa-user-graduate"></i> Acadêmico treinante
+                        <span>🎓</span> Acadêmico treinante
                     </button>
                     <button class="btn option-btn" onclick="setUserType('medico')">
-                        <i class="fas fa-user-md"></i> Médico recém-formado
+                        <span>👨‍⚕️</span> Médico recém-formado
                     </button>
                     <button class="btn option-btn" onclick="setUserType('especialista')">
-                        <i class="fas fa-user-tie"></i> Especialista
+                        <span>👔</span> Especialista
                     </button>
                 </div>
             </div>
             
             <button class="btn back-btn" onclick="navigateTo('welcome-screen')">
-                <i class="fas fa-arrow-left"></i> Voltar
+                <span class="icon icon-arrow-left"></span> Voltar
             </button>
         </section>
         
@@ -751,17 +768,17 @@
         <section id="action-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
                 <div id="user-display" class="user-info">
-                    <i class="fas fa-user"></i> <span>Médico recém-formado</span>
+                    <span class="icon icon-user"></span> <span>Médico recém-formado</span>
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text">Como posso ajudá-lo hoje?</p>
@@ -769,26 +786,26 @@
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-tasks"></i> O que você gostaria de fazer?</h2>
+                <h2 class="title"><span>📝</span> O que você gostaria de fazer?</h2>
                 
                 <div class="btn-container">
                     <button class="btn" onclick="navigateTo('do-screen')">
-                        <i class="fas fa-file-alt"></i> Preencher DO
+                        <span class="icon icon-file"></span> Preencher DO
                     </button>
                     <button class="btn" onclick="navigateTo('data-screen')">
-                        <i class="fas fa-chart-bar"></i> Consultar dados epidemiológicos
+                        <span class="icon icon-chart"></span> Consultar dados epidemiológicos
                     </button>
                     <button class="btn" onclick="navigateTo('law-screen')">
-                        <i class="fas fa-balance-scale"></i> Ver legislação e orientações
+                        <span class="icon icon-scale"></span> Ver legislação e orientações
                     </button>
                     <button class="btn" onclick="navigateTo('history-screen')">
-                        <i class="fas fa-history"></i> Histórico de Declarações
+                        <span class="icon icon-history"></span> Histórico de Declarações
                     </button>
                 </div>
             </div>
             
             <button class="btn back-btn" onclick="navigateTo('user-screen')">
-                <i class="fas fa-arrow-left"></i> Voltar
+                <span class="icon icon-arrow-left"></span> Voltar
             </button>
         </section>
         
@@ -796,17 +813,17 @@
         <section id="do-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
                 <div id="do-user-display" class="user-info">
-                    <i class="fas fa-user"></i> <span>Médico recém-formado</span>
+                    <span class="icon icon-user"></span> <span>Médico recém-formado</span>
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text" id="nina-do-text">Vamos preencher a Declaração de Óbito. Vou guiá-lo passo a passo.</p>
@@ -871,17 +888,17 @@
         <section id="data-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
                 <div class="user-info">
-                    <i class="fas fa-chart-bar"></i> Dados Epidemiológicos
+                    <span class="icon icon-chart"></span> Dados Epidemiológicos
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text">Aqui estão os dados epidemiológicos atualizados. Essas informações podem ajudar na vigilância em saúde.</p>
@@ -889,7 +906,7 @@
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico</h2>
+                <h2 class="title"><span>📊</span> Painel Epidemiológico</h2>
                 
                 <div class="form-group">
                     <label for="date-select">Selecione a data:</label>
@@ -898,13 +915,13 @@
                 
                 <div class="dash-container">
                     <div class="dash-card">
-                        <h3><i class="fas fa-skull"></i> Total de Óbitos</h3>
+                        <h3><span>💀</span> Total de Óbitos</h3>
                         <div class="dash-value">142</div>
                         <p>Registrados no dia selecionado</p>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-heartbeat"></i> Mortes Naturais</h3>
+                        <h3><span>❤️</span> Mortes Naturais</h3>
                         <div class="dash-value">89</div>
                         <p>Causas mais prevalentes:</p>
                         <ul class="dash-list">
@@ -916,7 +933,7 @@
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Mortes Suspeitas</h3>
+                        <h3><span>⚠️</span> Mortes Suspeitas</h3>
                         <div class="dash-value">24</div>
                         <p>Principais origens:</p>
                         <ul class="dash-list">
@@ -927,7 +944,7 @@
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-car-crash"></i> Mortes Violentas</h3>
+                        <h3><span>🚗</span> Mortes Violentas</h3>
                         <div class="dash-value">29</div>
                         <p>Distribuição por tipo:</p>
                         <ul class="dash-list">
@@ -938,7 +955,7 @@
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-file-medical"></i> Origem das DOs</h3>
+                        <h3><span>📝</span> Origem das DOs</h3>
                         <div class="dash-value">142</div>
                         <p>Distribuição por origem:</p>
                         <ul class="dash-list">
@@ -951,7 +968,7 @@
             </div>
             
             <button class="btn back-btn" onclick="navigateTo('action-screen')">
-                <i class="fas fa-arrow-left"></i> Voltar
+                <span class="icon icon-arrow-left"></span> Voltar
             </button>
         </section>
         
@@ -959,17 +976,17 @@
         <section id="law-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
                 <div class="user-info">
-                    <i class="fas fa-balance-scale"></i> Legislação
+                    <span class="icon icon-scale"></span> Legislação
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text">É importante conhecer as diretrizes legais para o preenchimento da Declaração de Óbito.</p>
@@ -977,7 +994,7 @@
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-gavel"></i> Legislação e Orientações Finais</h2>
+                <h2 class="title"><span>⚖️</span> Legislação e Orientações Finais</h2>
                 
                 <div class="data-card">
                     <h3>Responsabilidade Legal</h3>
@@ -994,7 +1011,7 @@
                 </div>
                 
                 <div class="alert">
-                    <i class="fas fa-exclamation-circle"></i>
+                    <span>⚠️</span>
                     <div>
                         <strong>Atenção:</strong> A lei prevê que, em localidades sem médicos, a DO seja preenchida pelo cartório, 
                         na presença do declarante e de duas pessoas idôneas, maiores de idade.
@@ -1013,7 +1030,7 @@
             </div>
             
             <button class="btn back-btn" onclick="navigateTo('action-screen')">
-                <i class="fas fa-arrow-left"></i> Voltar
+                <span class="icon icon-arrow-left"></span> Voltar
             </button>
         </section>
         
@@ -1021,17 +1038,17 @@
         <section id="history-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
                 <div class="user-info">
-                    <i class="fas fa-history"></i> Histórico
+                    <span class="icon icon-history"></span> Histórico
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text">Aqui estão todas as declarações de óbito que você preencheu.</p>
@@ -1039,7 +1056,7 @@
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-file-medical"></i> Histórico de Declarações</h2>
+                <h2 class="title"><span class="icon icon-file"></span> Histórico de Declarações</h2>
                 
                 <div id="history-list" class="history-container">
                     <!-- Histórico será carregado aqui -->
@@ -1047,25 +1064,25 @@
             </div>
             
             <button class="btn back-btn" onclick="navigateTo('action-screen')">
-                <i class="fas fa-arrow-left"></i> Voltar
+                <span class="icon icon-arrow-left"></span> Voltar
             </button>
         </section>
         
-        <!-- Nova Tela 8: Resumo da DO -->
+        <!-- Tela 8: Resumo da DO -->
         <section id="summary-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-file-medical-alt logo-icon"></i>
+                    <span class="logo-icon">📋</span>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
                 <div class="user-info">
-                    <i class="fas fa-file-medical"></i> Resumo
+                    <span class="icon icon-file"></span> Resumo
                 </div>
             </header>
             
             <div class="nina-assistant">
                 <div class="nina-avatar">
-                    <i class="fas fa-user-md"></i>
+                    <span>👩‍⚕️</span>
                 </div>
                 <div class="speech-bubble">
                     <p class="speech-text">Resumo da Declaração de Óbito preenchida.</p>
@@ -1076,7 +1093,7 @@
                 <h2 class="summary-title">Resumo da Declaração de Óbito</h2>
                 
                 <div class="success-message">
-                    <i class="fas fa-check-circle"></i>
+                    <span>✅</span>
                     <div>Declaração de Óbito salva com sucesso no histórico!</div>
                 </div>
                 
@@ -1087,10 +1104,10 @@
             
             <div class="btn-container">
                 <button class="btn" onclick="navigateTo('welcome-screen')">
-                    <i class="fas fa-home"></i> Voltar ao Início
+                    <span class="icon icon-home"></span> Voltar ao Início
                 </button>
                 <button class="btn option-btn" onclick="navigateTo('history-screen')">
-                    <i class="fas fa-history"></i> Ver Histórico
+                    <span class="icon icon-history"></span> Ver Histórico
                 </button>
             </div>
         </section>
@@ -1108,7 +1125,7 @@
                 ninaText: "Esse espaço é reservado para a identificação do paciente. Tenha em mãos um documento com foto e converse com um familiar calmo.",
                 content: `
                     <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <span>⚠️</span>
                         <div><strong>Atenção:</strong> Jamais preencha a DO sem ver o cadáver!</div>
                     </div>
                     
@@ -1262,7 +1279,7 @@
                 ninaText: "Atente-se à idade da vítima! Esse bloco é reservado a dados epidemiológicos materno-infantis.",
                 content: `
                     <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <span>⚠️</span>
                         <div><strong>Importante:</strong> Preencha este bloco apenas se o falecido for criança menor de 1 ano ou mulher em idade fértil (10-49 anos).</div>
                     </div>
                     
@@ -1321,7 +1338,7 @@
                 ninaText: "Descreva as condições e causas do óbito conforme a sequência de eventos.",
                 content: `
                     <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <span>⚠️</span>
                         <div><strong>Importante:</strong> Preencha a causa básica e as causas associadas.</div>
                     </div>
                     
@@ -1407,7 +1424,7 @@
                 ninaText: "Preencha apenas se a morte foi por causas externas (acidentes, violências, etc.).",
                 content: `
                     <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <span>⚠️</span>
                         <div><strong>Atenção:</strong> Este bloco só deve ser preenchido em caso de morte por causas externas.</div>
                     </div>
                     
@@ -1494,7 +1511,7 @@
                 ninaText: "Preencha este bloco apenas se a declaração for preenchida em localidade sem médico.",
                 content: `
                     <div class="alert">
-                        <i class="fas fa-exclamation-circle"></i>
+                        <span>⚠️</span>
                         <div><strong>Nota:</strong> Este bloco deve ser preenchido apenas em localidades sem médicos, na presença do declarante e de duas testemunhas.</div>
                     </div>
                     
@@ -1548,12 +1565,10 @@
             });
             document.getElementById(screenId).classList.add('active');
             
-            // Atualiza a barra de progresso quando entrar na tela de DO
             if (screenId === 'do-screen') {
                 updateDOView();
             }
             
-            // Atualiza o histórico quando entrar na tela de histórico
             if (screenId === 'history-screen') {
                 loadHistory();
             }
@@ -1576,8 +1591,8 @@
                     break;
             }
             
-            document.getElementById('user-display').innerHTML = `<i class="fas fa-user"></i> ${displayText}`;
-            document.getElementById('do-user-display').innerHTML = `<i class="fas fa-user"></i> ${displayText}`;
+            document.getElementById('user-display').innerHTML = `<span class="icon icon-user"></span> ${displayText}`;
+            document.getElementById('do-user-display').innerHTML = `<span class="icon icon-user"></span> ${displayText}`;
             
             navigateTo('action-screen');
         }
@@ -1589,21 +1604,18 @@
             const ninaText = document.getElementById('nina-do-text');
             const buttonsContainer = document.getElementById('do-buttons');
             
-            // Atualiza texto da Nina
             ninaText.textContent = section.ninaText;
             
-            // Atualiza conteúdo
             doContent.innerHTML = `
-                <h2 class="title"><i class="fas fa-file-medical"></i> ${section.title}</h2>
+                <h2 class="title"><span>📝</span> ${section.title}</h2>
                 ${section.content}
             `;
             
-            // Atualiza botões
             buttonsContainer.innerHTML = '';
             section.buttons.forEach(btn => {
                 const button = document.createElement('button');
                 button.className = `btn ${btn.action === 'prevSection' ? 'back-btn' : ''}`;
-                button.innerHTML = `<i class="fas fa-${btn.icon}"></i> ${btn.text}`;
+                button.innerHTML = `<span class="icon icon-${btn.icon}"></span> ${btn.text}`;
                 button.onclick = function() {
                     if (btn.action === 'nextSection') nextSection();
                     else if (btn.action === 'prevSection') prevSection();
@@ -1612,7 +1624,6 @@
                 buttonsContainer.appendChild(button);
             });
             
-            // Atualiza progresso
             updateProgress();
         }
         
@@ -1720,7 +1731,7 @@
             
             let summaryHTML = `
                 <div class="summary-section">
-                    <h3><i class="fas fa-user"></i> Identificação do Falecido</h3>
+                    <h3><span class="icon icon-user"></span> Identificação do Falecido</h3>
                     <div class="summary-item">
                         <div class="summary-label">Nome completo:</div>
                         <div class="summary-value">${doData.patientName}</div>
@@ -1748,7 +1759,7 @@
                 </div>
                 
                 <div class="summary-section">
-                    <h3><i class="fas fa-home"></i> Residência</h3>
+                    <h3><span>🏠</span> Residência</h3>
                     <div class="summary-item">
                         <div class="summary-label">Endereço:</div>
                         <div class="summary-value">${doData.resStreet} ${doData.resNumber} ${doData.resComplement}</div>
@@ -1768,7 +1779,7 @@
                 </div>
                 
                 <div class="summary-section">
-                    <h3><i class="fas fa-map-marker-alt"></i> Local da Ocorrência</h3>
+                    <h3><span>📍</span> Local da Ocorrência</h3>
                     <div class="summary-item">
                         <div class="summary-label">Local:</div>
                         <div class="summary-value">${getDeathPlaceText(doData.deathPlace)}</div>
@@ -1792,7 +1803,7 @@
                 </div>
                 
                 <div class="summary-section">
-                    <h3><i class="fas fa-heartbeat"></i> Causas do Óbito</h3>
+                    <h3><span>⚕️</span> Causas do Óbito</h3>
                     <div class="summary-item">
                         <div class="summary-label">Causa imediata:</div>
                         <div class="summary-value">${doData.immediateCause}</div>
@@ -1816,7 +1827,7 @@
                 </div>
                 
                 <div class="summary-section">
-                    <h3><i class="fas fa-user-md"></i> Médico Declarante</h3>
+                    <h3><span class="icon icon-user"></span> Médico Declarante</h3>
                     <div class="summary-item">
                         <div class="summary-label">Nome:</div>
                         <div class="summary-value">${doData.doctorName}</div>
@@ -1835,7 +1846,7 @@
             if (doData.violentDeath === 'Sim') {
                 summaryHTML += `
                     <div class="summary-section">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Causas Externas</h3>
+                        <h3><span>⚠️</span> Causas Externas</h3>
                         <div class="summary-item">
                             <div class="summary-label">Data do ocorrido:</div>
                             <div class="summary-value">${formatDate(doData.accidentDate)}</div>
@@ -1862,7 +1873,7 @@
             
             summaryHTML += `
                 <div class="summary-section">
-                    <h3><i class="fas fa-building"></i> Cartório</h3>
+                    <h3><span>🏢</span> Cartório</h3>
                     <div class="summary-item">
                         <div class="summary-label">Nome:</div>
                         <div class="summary-value">${doData.registryOffice}</div>
@@ -1881,7 +1892,7 @@
             if (doData.declarantName && doData.declarantName !== 'Não aplicável') {
                 summaryHTML += `
                     <div class="summary-section">
-                        <h3><i class="fas fa-users"></i> Localidade sem Médico</h3>
+                        <h3><span>👥</span> Localidade sem Médico</h3>
                         <div class="summary-item">
                             <div class="summary-label">Declarante:</div>
                             <div class="summary-value">${doData.declarantName}</div>
@@ -1971,7 +1982,7 @@
             if (history.length === 0) {
                 historyList.innerHTML = `
                     <div class="empty-history">
-                        <i class="fas fa-file-medical"></i>
+                        <span>📂</span>
                         <h3>Nenhuma declaração encontrada</h3>
                         <p>Preencha uma declaração de óbito para começar seu histórico</p>
                     </div>
@@ -1991,10 +2002,10 @@
                     </div>
                     <div class="history-actions">
                         <button class="action-btn" onclick="viewSummary('${item.id}')" title="Visualizar">
-                            <i class="fas fa-eye"></i>
+                            <span class="icon icon-eye"></span>
                         </button>
                         <button class="action-btn" onclick="deleteHistoryItem('${item.id}')" title="Excluir">
-                            <i class="fas fa-trash"></i>
+                            <span class="icon icon-trash"></span>
                         </button>
                     </div>
                 `;
@@ -2027,7 +2038,6 @@
             document.getElementById('progress-fill').style.width = `${progress}%`;
             document.querySelector('.progress-text').textContent = `Bloco ${currentSection + 1} de ${doSections.length}`;
             
-            // Atualizar indicadores de passo
             document.querySelectorAll('.step').forEach((step, index) => {
                 if (index <= currentSection) {
                     step.classList.add('active');
@@ -2051,14 +2061,18 @@
             }
         }
         
+        // Service Worker para PWA offline
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso', reg))
+                    .catch(err => console.log('Falha no registro do Service Worker', err));
+            });
+        }
+        
         // Impedir zoom em dispositivos móveis
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
-        });
-
-        // Inicializar histórico ao carregar
-        document.addEventListener('DOMContentLoaded', function() {
-            history = JSON.parse(localStorage.getItem('doHistory')) || [];
         });
     </script>
 </body>
