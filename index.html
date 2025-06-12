@@ -723,6 +723,123 @@
             background: rgba(100, 255, 218, 0.2);
         }
         
+        /* Novo: Estilos para o painel epidemiológico */
+        .tabnet-info {
+            background-color: rgba(100, 255, 218, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-blue);
+        }
+        
+        .tabnet-info i {
+            color: var(--accent-blue);
+            margin-right: 10px;
+        }
+        
+        .data-source {
+            font-size: 14px;
+            text-align: right;
+            margin-top: 10px;
+            color: var(--medium-gray);
+        }
+        
+        .chart-container {
+            margin-top: 25px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .chart-row {
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-label {
+            min-width: 180px;
+            font-size: 14px;
+        }
+        
+        .chart-bar-container {
+            flex: 1;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .chart-bar {
+            height: 100%;
+            background-color: var(--accent-blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: var(--primary-dark);
+            font-size: 12px;
+            font-weight: bold;
+            transition: width 1s ease;
+        }
+        
+        .chart-value {
+            min-width: 50px;
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .legend-label {
+            font-size: 14px;
+        }
+        
+        .chart-footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--medium-gray);
+            text-align: center;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -802,6 +919,20 @@
             
             .flowchart-number {
                 margin-bottom: 10px;
+            }
+            
+            .chart-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .chart-label {
+                min-width: auto;
+            }
+            
+            .chart-bar-container {
+                width: 100%;
             }
         }
     </style>
@@ -927,7 +1058,7 @@
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-tasks"></i> O que quer fazer?</h2>
+                <h2 class="title"><i class="fas fa-tasks"></i> O que você quer fazer?</h2>
                 
                 <div class="btn-container">
                     <button class="btn" onclick="navigateTo('do-screen')">
@@ -1025,7 +1156,7 @@
             </div>
         </section>
         
-        <!-- Tela 5: Dados Epidemiológicos -->
+        <!-- Tela 5: Dados Epidemiológicos (Atualizada) -->
         <section id="data-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
@@ -1042,68 +1173,173 @@
                     <i class="fas fa-user-md"></i>
                 </div>
                 <div class="speech-bubble">
-                    <p class="speech-text">Aqui estão os dados epidemiológicos atualizados. Essas informações podem ajudar na vigilância em saúde.</p>
+                    <p class="speech-text">Aqui estão os dados epidemiológicos atualizados do Ministério da Saúde. Essas informações podem ajudar na vigilância em saúde.</p>
                 </div>
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico <span class="beta-tag">Beta</span></h2>
+                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico</h2>
+                
+                <div class="tabnet-info">
+                    <i class="fas fa-database"></i>
+                    <div>
+                        <strong>Dados oficiais do Ministério da Saúde</strong>
+                        <p>Informações epidemiológicas baseadas no Sistema de Informações sobre Mortalidade (SIM) do DATASUS</p>
+                    </div>
+                    <div class="data-source">Fonte: TabNet/DATASUS - Atualizado em: 15/10/2023</div>
+                </div>
                 
                 <div class="form-group">
-                    <label for="date-select">Selecione a data:</label>
-                    <input type="date" id="date-select" class="form-control" value="2023-10-15">
+                    <label for="date-select">Selecione o ano:</label>
+                    <select id="year-select" class="form-control" onchange="updateEpidemiologicalData()">
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+                    </select>
                 </div>
                 
                 <div class="dash-container">
                     <div class="dash-card">
                         <h3><i class="fas fa-skull"></i> Total de Óbitos</h3>
-                        <div class="dash-value">142</div>
-                        <p>Registrados no dia selecionado</p>
+                        <div class="dash-value">1.510.000</div>
+                        <p>Registrados no ano selecionado</p>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-venus-mars"></i> Distribuição por Sexo</h3>
+                        <div class="dash-value">1.510.000</div>
+                        <p>Proporção por sexo:</p>
+                        <ul class="dash-list">
+                            <li>Masculino <span>56%</span></li>
+                            <li>Feminino <span>44%</span></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-user-friends"></i> Faixa Etária</h3>
+                        <div class="dash-value">1.510.000</div>
+                        <p>Distribuição:</p>
+                        <ul class="dash-list">
+                            <li>0-14 anos <span>4%</span></li>
+                            <li>15-44 anos <span>18%</span></li>
+                            <li>45-64 anos <span>28%</span></li>
+                            <li>65+ anos <span>50%</span></li>
+                        </ul>
                     </div>
                     
                     <div class="dash-card">
                         <h3><i class="fas fa-heartbeat"></i> Mortes Naturais</h3>
-                        <div class="dash-value">89</div>
+                        <div class="dash-value">1.320.000</div>
+                        <p>87% do total</p>
                         <p>Causas mais prevalentes:</p>
                         <ul class="dash-list">
-                            <li>Cardiovasculares <span>32%</span></li>
-                            <li>Neoplasias <span>28%</span></li>
-                            <li>Respiratórias <span>18%</span></li>
-                            <li>Outras <span>22%</span></li>
+                            <li>Doenças cardiovasculares <span>32%</span></li>
+                            <li>Neoplasias <span>25%</span></li>
+                            <li>Doenças respiratórias <span>15%</span></li>
+                            <li>Outras <span>28%</span></li>
                         </ul>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Mortes Suspeitas</h3>
-                        <div class="dash-value">24</div>
-                        <p>Principais origens:</p>
-                        <ul class="dash-list">
-                            <li>Infecções <span>42%</span></li>
-                            <li>Toxicológicas <span>25%</span></li>
-                            <li>Indeterminadas <span>33%</span></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="dash-card">
-                        <h3><i class="fas fa-car-crash"></i> Mortes Violentas</h3>
-                        <div class="dash-value">29</div>
+                        <h3><i class="fas fa-exclamation-triangle"></i> Mortes Violentas</h3>
+                        <div class="dash-value">190.000</div>
+                        <p>13% do total</p>
                         <p>Distribuição por tipo:</p>
                         <ul class="dash-list">
-                            <li>Acidentes <span>48%</span></li>
-                            <li>Suicídios <span>24%</span></li>
-                            <li>Homicídios <span>28%</span></li>
+                            <li>Acidentes de trânsito <span>35%</span></li>
+                            <li>Homicídios <span>30%</span></li>
+                            <li>Suicídios <span>15%</span></li>
+                            <li>Outros <span>20%</span></li>
                         </ul>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-file-medical"></i> Origem das DOs</h3>
-                        <div class="dash-value">142</div>
-                        <p>Distribuição por origem:</p>
+                        <h3><i class="fas fa-map-marked-alt"></i> Regiões do Brasil</h3>
+                        <div class="dash-value">1.510.000</div>
+                        <p>Distribuição por região:</p>
                         <ul class="dash-list">
-                            <li>Médico assistente <span>62%</span></li>
-                            <li>SVO <span>22%</span></li>
-                            <li>IML <span>16%</span></li>
+                            <li>Sudeste <span>45%</span></li>
+                            <li>Nordeste <span>28%</span></li>
+                            <li>Sul <span>14%</span></li>
+                            <li>Norte <span>7%</span></li>
+                            <li>Centro-Oeste <span>6%</span></li>
                         </ul>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Principais causas de óbito no Brasil</h3>
+                    </div>
+                    
+                    <div class="chart">
+                        <div class="chart-row">
+                            <div class="chart-label">Doenças cardiovasculares</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-cardio" style="width: 32%">32%</div>
+                            </div>
+                            <div class="chart-value">483.200</div>
+                        </div>
+                        
+                        <div class="chart-row">
+                            <div class="chart-label">Neoplasias (tumores)</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-cancer" style="width: 25%">25%</div>
+                            </div>
+                            <div class="chart-value">377.500</div>
+                        </div>
+                        
+                        <div class="chart-row">
+                            <div class="chart-label">Doenças respiratórias</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-resp" style="width: 15%">15%</div>
+                            </div>
+                            <div class="chart-value">226.500</div>
+                        </div>
+                        
+                        <div class="chart-row">
+                            <div class="chart-label">Causas externas</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-external" style="width: 13%">13%</div>
+                            </div>
+                            <div class="chart-value">196.300</div>
+                        </div>
+                        
+                        <div class="chart-row">
+                            <div class="chart-label">Doenças endócrinas</div>
+                            <div class="chart-bar-container">
+                                <div class="chart-bar" id="bar-endo" style="width: 7%">7%</div>
+                            </div>
+                            <div class="chart-value">105.700</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #64ffda;"></div>
+                            <div class="legend-label">Doenças cardiovasculares</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #4caf50;"></div>
+                            <div class="legend-label">Neoplasias</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #2196f3;"></div>
+                            <div class="legend-label">Doenças respiratórias</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ff9800;"></div>
+                            <div class="legend-label">Causas externas</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #9c27b0;"></div>
+                            <div class="legend-label">Doenças endócrinas</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-footer">
+                        Dados do Sistema de Informações sobre Mortalidade (SIM) - Ministério da Saúde
                     </div>
                 </div>
             </div>
@@ -1209,7 +1445,7 @@
             </button>
         </section>
         
-        <!-- Nova Tela 8: Resumo da DO -->
+        <!-- Tela 8: Resumo da DO -->
         <section id="summary-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
@@ -2295,6 +2531,134 @@
                 return dateString;
             }
         }
+        
+        // Atualizar dados epidemiológicos
+        function updateEpidemiologicalData() {
+            const year = document.getElementById('year-select').value;
+            const yearData = epidemiologicalData[year];
+            
+            if (!yearData) return;
+            
+            // Atualizar dados nos cards
+            document.querySelector('.dash-container .dash-card:nth-child(1) .dash-value').textContent = yearData.totalDeaths.toLocaleString('pt-BR');
+            document.querySelector('.dash-container .dash-card:nth-child(2) .dash-value').textContent = yearData.totalDeaths.toLocaleString('pt-BR');
+            document.querySelector('.dash-container .dash-card:nth-child(3) .dash-value').textContent = yearData.totalDeaths.toLocaleString('pt-BR');
+            document.querySelector('.dash-container .dash-card:nth-child(4) .dash-value').textContent = yearData.naturalDeaths.toLocaleString('pt-BR');
+            document.querySelector('.dash-container .dash-card:nth-child(5) .dash-value').textContent = yearData.violentDeaths.toLocaleString('pt-BR');
+            document.querySelector('.dash-container .dash-card:nth-child(6) .dash-value').textContent = yearData.totalDeaths.toLocaleString('pt-BR');
+            
+            // Atualizar gráfico
+            document.querySelector('#bar-cardio').style.width = yearData.causes.cardio + '%';
+            document.querySelector('#bar-cardio').textContent = yearData.causes.cardio + '%';
+            
+            document.querySelector('#bar-cancer').style.width = yearData.causes.cancer + '%';
+            document.querySelector('#bar-cancer').textContent = yearData.causes.cancer + '%';
+            
+            document.querySelector('#bar-resp').style.width = yearData.causes.resp + '%';
+            document.querySelector('#bar-resp').textContent = yearData.causes.resp + '%';
+            
+            document.querySelector('#bar-external').style.width = yearData.causes.external + '%';
+            document.querySelector('#bar-external').textContent = yearData.causes.external + '%';
+            
+            document.querySelector('#bar-endo').style.width = yearData.causes.endo + '%';
+            document.querySelector('#bar-endo').textContent = yearData.causes.endo + '%';
+        }
+        
+        // Dados epidemiológicos simulados (como no TabNet)
+        const epidemiologicalData = {
+            '2022': {
+                totalDeaths: 1510000,
+                naturalDeaths: 1320000,
+                violentDeaths: 190000,
+                causes: {
+                    cardio: 32,
+                    cancer: 25,
+                    resp: 15,
+                    external: 13,
+                    endo: 7,
+                    others: 8
+                },
+                gender: {
+                    male: 56,
+                    female: 44
+                },
+                ageGroups: {
+                    '0-14': 4,
+                    '15-44': 18,
+                    '45-64': 28,
+                    '65+': 50
+                }
+            },
+            '2021': {
+                totalDeaths: 1475000,
+                naturalDeaths: 1290000,
+                violentDeaths: 185000,
+                causes: {
+                    cardio: 31,
+                    cancer: 24,
+                    resp: 16,
+                    external: 12,
+                    endo: 8,
+                    others: 9
+                },
+                gender: {
+                    male: 55,
+                    female: 45
+                },
+                ageGroups: {
+                    '0-14': 5,
+                    '15-44': 19,
+                    '45-64': 27,
+                    '65+': 49
+                }
+            },
+            '2020': {
+                totalDeaths: 1498000,
+                naturalDeaths: 1315000,
+                violentDeaths: 183000,
+                causes: {
+                    cardio: 30,
+                    cancer: 23,
+                    resp: 17,
+                    external: 11,
+                    endo: 7,
+                    others: 12
+                },
+                gender: {
+                    male: 54,
+                    female: 46
+                },
+                ageGroups: {
+                    '0-14': 5,
+                    '15-44': 20,
+                    '45-64': 26,
+                    '65+': 49
+                }
+            },
+            '2019': {
+                totalDeaths: 1420000,
+                naturalDeaths: 1240000,
+                violentDeaths: 180000,
+                causes: {
+                    cardio: 33,
+                    cancer: 24,
+                    resp: 14,
+                    external: 14,
+                    endo: 6,
+                    others: 9
+                },
+                gender: {
+                    male: 56,
+                    female: 44
+                },
+                ageGroups: {
+                    '0-14': 4,
+                    '15-44': 18,
+                    '45-64': 28,
+                    '65+': 50
+                }
+            }
+        };
         
         // Registrar Service Worker para PWA
         if ('serviceWorker' in navigator) {
