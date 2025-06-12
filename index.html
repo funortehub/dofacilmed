@@ -20,7 +20,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
@@ -53,7 +52,6 @@
             flex-direction: column;
             overflow-x: hidden;
             touch-action: manipulation;
-            overflow: hidden; /* Impede rolagem global */
         }
         
         .container {
@@ -180,7 +178,7 @@
             margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             flex: 1;
-            overflow-y: auto; /* Permite rolagem apenas nesta área */
+            overflow-y: auto;
             max-height: 60vh;
         }
         
@@ -525,7 +523,7 @@
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
-            overflow-y: auto; /* Permite rolagem apenas nesta área */
+            overflow-y: auto;
             max-height: 60vh;
         }
         
@@ -592,47 +590,6 @@
             font-size: 24px;
         }
         
-        .flowchart {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        
-        .flowchart-step {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            padding-left: 20px;
-            position: relative;
-        }
-        
-        .flowchart-step:before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent-blue);
-            font-weight: bold;
-        }
-        
-        .step-number {
-            background-color: var(--accent-blue);
-            color: var(--primary-dark);
-            width: 25px;
-            height: 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-        
-        .step-content {
-            flex: 1;
-        }
-        
         footer {
             text-align: center;
             padding: 20px;
@@ -641,9 +598,129 @@
             border-top: 1px solid rgba(100, 255, 218, 0.2);
         }
         
-        .chart-container {
-            height: 300px;
+        /* Novo: Fluxograma */
+        .flowchart {
             margin: 20px 0;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+        
+        .flowchart-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: rgba(100, 255, 218, 0.1);
+            border-left: 3px solid var(--accent-blue);
+        }
+        
+        .flowchart-number {
+            width: 30px;
+            height: 30px;
+            background-color: var(--accent-blue);
+            color: var(--primary-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .flowchart-text {
+            flex: 1;
+        }
+        
+        .flowchart-arrow {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            color: var(--accent-blue);
+        }
+        
+        /* Novo: Modal de informações */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--primary-blue);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: var(--accent-blue);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: var(--accent-blue);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .modal-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .modal-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .beta-tag {
+            background-color: var(--accent-blue);
+            color: var(--primary-dark);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .info-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent-blue);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .info-btn:hover {
+            background: rgba(100, 255, 218, 0.2);
         }
         
         @keyframes fadeIn {
@@ -717,10 +794,40 @@
                 min-width: auto;
                 margin-bottom: 5px;
             }
+            
+            .flowchart-step {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .flowchart-number {
+                margin-bottom: 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Modal de informações -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <h2 class="modal-title">Sobre o D.O Fácil</h2>
+            <p>Esse aplicativo foi desenvolvido por acadêmicos de Medicina - FUNORTE | ICS 2025.1</p>
+            <p><strong>Autores:</strong></p>
+            <ul class="modal-list">
+                <li>CECÍLIA SANTOS VELOSO</li>
+                <li>EDUARDO APARECIDO ROCHA</li>
+                <li>FERNANDA OLIVEIRA RABELO</li>
+                <li>JOÃO PEDRO TORRES</li>
+                <li>PEDRO VITOR DUARTE GUIMARÃES</li>
+                <li>RAFAEL ALONSO PIRES</li>
+                <li>SAMUEL FILIPE CAMPOS MONT'ALVÃO</li>
+                <li>VIVIAN EMANUELLY BARBOSA ALVES</li>
+                <li>PAULA LUDMILLA SILVA ALMEIDA</li>
+            </ul>
+        </div>
+    </div>
+    
     <div class="container">
         <!-- Tela 1: Boas-Vindas -->
         <section id="welcome-screen" class="screen active">
@@ -729,6 +836,9 @@
                     <i class="fas fa-file-medical-alt logo-icon"></i>
                     <h1 class="logo-text">D.O Fácil</h1>
                 </div>
+                <button class="info-btn" onclick="openModal()">
+                    <i class="fas fa-info-circle"></i>
+                </button>
             </header>
             
             <div class="nina-assistant">
@@ -932,65 +1042,69 @@
                     <i class="fas fa-user-md"></i>
                 </div>
                 <div class="speech-bubble">
-                    <p class="speech-text">Dados epidemiológicos baseados nas últimas estatísticas do Ministério da Saúde.</p>
+                    <p class="speech-text">Aqui estão os dados epidemiológicos atualizados. Essas informações podem ajudar na vigilância em saúde.</p>
                 </div>
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico - Ministério da Saúde</h2>
+                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico <span class="beta-tag">Beta</span></h2>
                 
                 <div class="form-group">
-                    <label for="date-select">Selecione o ano:</label>
-                    <select id="date-select" class="form-control">
-                        <option value="2023">2023</option>
-                        <option value="2022">2022</option>
-                        <option value="2021">2021</option>
-                    </select>
+                    <label for="date-select">Selecione a data:</label>
+                    <input type="date" id="date-select" class="form-control" value="2023-10-15">
                 </div>
                 
                 <div class="dash-container">
                     <div class="dash-card">
                         <h3><i class="fas fa-skull"></i> Total de Óbitos</h3>
-                        <div class="dash-value" id="total-deaths">1.450.000</div>
-                        <p>Registrados no ano selecionado</p>
+                        <div class="dash-value">142</div>
+                        <p>Registrados no dia selecionado</p>
                     </div>
                     
                     <div class="dash-card">
                         <h3><i class="fas fa-heartbeat"></i> Mortes Naturais</h3>
-                        <div class="dash-value" id="natural-deaths">1.220.000</div>
-                        <p>Principais causas:</p>
+                        <div class="dash-value">89</div>
+                        <p>Causas mais prevalentes:</p>
                         <ul class="dash-list">
-                            <li>Doenças cardiovasculares <span>28%</span></li>
-                            <li>Neoplasias <span>19%</span></li>
-                            <li>Doenças respiratórias <span>12%</span></li>
+                            <li>Cardiovasculares <span>32%</span></li>
+                            <li>Neoplasias <span>28%</span></li>
+                            <li>Respiratórias <span>18%</span></li>
+                            <li>Outras <span>22%</span></li>
                         </ul>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Causas Externas</h3>
-                        <div class="dash-value" id="external-deaths">150.000</div>
-                        <p>Distribuição:</p>
+                        <h3><i class="fas fa-exclamation-triangle"></i> Mortes Suspeitas</h3>
+                        <div class="dash-value">24</div>
+                        <p>Principais origens:</p>
                         <ul class="dash-list">
-                            <li>Acidentes <span>45%</span></li>
-                            <li>Homicídios <span>35%</span></li>
-                            <li>Suicídios <span>20%</span></li>
+                            <li>Infecções <span>42%</span></li>
+                            <li>Toxicológicas <span>25%</span></li>
+                            <li>Indeterminadas <span>33%</span></li>
                         </ul>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-baby"></i> Mortalidade Infantil</h3>
-                        <div class="dash-value" id="infant-deaths">14.000</div>
-                        <p>Taxa: 12,4 por mil nascidos vivos</p>
-                        <p>Principais causas: afecções perinatais (55%)</p>
+                        <h3><i class="fas fa-car-crash"></i> Mortes Violentas</h3>
+                        <div class="dash-value">29</div>
+                        <p>Distribuição por tipo:</p>
+                        <ul class="dash-list">
+                            <li>Acidentes <span>48%</span></li>
+                            <li>Suicídios <span>24%</span></li>
+                            <li>Homicídios <span>28%</span></li>
+                        </ul>
                     </div>
-                </div>
-                
-                <div class="chart-container">
-                    <canvas id="causesChart"></canvas>
-                </div>
-                
-                <div class="chart-container">
-                    <canvas id="ageChart"></canvas>
+                    
+                    <div class="dash-card">
+                        <h3><i class="fas fa-file-medical"></i> Origem das DOs</h3>
+                        <div class="dash-value">142</div>
+                        <p>Distribuição por origem:</p>
+                        <ul class="dash-list">
+                            <li>Médico assistente <span>62%</span></li>
+                            <li>SVO <span>22%</span></li>
+                            <li>IML <span>16%</span></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             
@@ -1095,7 +1209,7 @@
             </button>
         </section>
         
-        <!-- Tela 8: Resumo da DO -->
+        <!-- Nova Tela 8: Resumo da DO -->
         <section id="summary-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
@@ -1112,7 +1226,7 @@
                     <i class="fas fa-user-md"></i>
                 </div>
                 <div class="speech-bubble">
-                    <p class="speech-text">Resumo da Declaração de Óbito preenchida com fluxograma de orientação.</p>
+                    <p class="speech-text">Resumo da Declaração de Óbito preenchida.</p>
                 </div>
             </div>
             
@@ -1586,6 +1700,23 @@
         let history = JSON.parse(localStorage.getItem('doHistory')) || [];
         let currentDOData = null;
         
+        // Funções para o modal de informações
+        function openModal() {
+            document.getElementById('infoModal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+        
+        // Fechar modal ao clicar fora do conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('infoModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+        
         // Navegação entre telas
         function navigateTo(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
@@ -1602,16 +1733,6 @@
             if (screenId === 'history-screen') {
                 loadHistory();
             }
-            
-            // Atualiza dados epidemiológicos quando entrar na tela de dados
-            if (screenId === 'data-screen') {
-                updateEpidemiologicalData();
-            }
-        }
-        
-        // Voltar para tela de ação
-        function backToAction() {
-            navigateTo('action-screen');
         }
         
         // Definir tipo de usuário
@@ -1670,6 +1791,11 @@
             
             // Atualiza progresso
             updateProgress();
+        }
+        
+        // Voltar para a tela de ação
+        function backToAction() {
+            navigateTo('action-screen');
         }
         
         // Avançar para próxima seção
@@ -1770,7 +1896,7 @@
             navigateTo('summary-screen');
         }
         
-        // Gerar resumo da DO
+        // Gerar resumo da DO com fluxograma
         function generateSummary(doData) {
             const summaryContent = document.getElementById('summary-content');
             
@@ -1886,6 +2012,69 @@
                         <div class="summary-value">${formatDate(doData.signatureDate)}</div>
                     </div>
                 </div>
+                
+                <div class="summary-section">
+                    <h3><i class="fas fa-sitemap"></i> Fluxograma de Preenchimento</h3>
+                    <div class="flowchart">
+                        <div class="flowchart-step">
+                            <div class="flowchart-number">1</div>
+                            <div class="flowchart-text">
+                                <strong>Identificação do falecido</strong><br>
+                                Certifique-se de verificar a identidade do falecido com documento oficial e informações de familiares
+                            </div>
+                        </div>
+                        <div class="flowchart-arrow">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="flowchart-number">2</div>
+                            <div class="flowchart-text">
+                                <strong>Determinação do local de ocorrência</strong><br>
+                                Identifique se o óbito ocorreu em hospital, domicílio ou via pública
+                            </div>
+                        </div>
+                        <div class="flowchart-arrow">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="flowchart-number">3</div>
+                            <div class="flowchart-text">
+                                <strong>Análise das causas do óbito</strong><br>
+                                Estabeleça a sequência causal: causa básica → causa antecedente → causa imediata
+                            </div>
+                        </div>
+                        <div class="flowchart-arrow">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="flowchart-number">4</div>
+                            <div class="flowchart-text">
+                                <strong>Verificação de casos especiais</strong><br>
+                                Para crianças e mulheres em idade fértil, preencha os dados materno-infantis
+                            </div>
+                        </div>
+                        <div class="flowchart-arrow">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="flowchart-number">5</div>
+                            <div class="flowchart-text">
+                                <strong>Registro das informações médicas</strong><br>
+                                Preencha seus dados como médico declarante e assine a declaração
+                            </div>
+                        </div>
+                        <div class="flowchart-arrow">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="flowchart-number">6</div>
+                            <div class="flowchart-text">
+                                <strong>Encaminhamento ao cartório</strong><br>
+                                Certifique-se que a declaração será registrada no cartório competente
+                            </div>
+                        </div>
+                    </div>
+                </div>
             `;
             
             if (doData.violentDeath === 'Sim') {
@@ -1966,166 +2155,7 @@
                 `;
             }
             
-            // Adicionar fluxograma de orientação
-            summaryHTML += `
-                <div class="summary-section">
-                    <h3><i class="fas fa-project-diagram"></i> Fluxograma de Orientação</h3>
-                    <div class="flowchart">
-                        <div class="flowchart-step">
-                            <div class="step-number">1</div>
-                            <div class="step-content">Verifique a identidade do falecido com documento oficial e confirme com familiar</div>
-                        </div>
-                        <div class="flowchart-step">
-                            <div class="step-number">2</div>
-                            <div class="step-content">Determine a causa básica da morte seguindo a sequência: causa básica → causa antecedente → causa imediata</div>
-                        </div>
-                        <div class="flowchart-step">
-                            <div class="step-number">3</div>
-                            <div class="step-content">Em caso de morte violenta/suspeita: notifique autoridades e preencha bloco VII</div>
-                        </div>
-                        <div class="flowchart-step">
-                            <div class="step-number">4</div>
-                            <div class="step-content">Para mulheres em idade fértil ou crianças: preencha bloco IV</div>
-                        </div>
-                        <div class="flowchart-step">
-                            <div class="step-number">5</div>
-                            <div class="step-content">Assine e registre no cartório em até 24 horas</div>
-                        </div>
-                        <div class="flowchart-step">
-                            <div class="step-number">6</div>
-                            <div class="step-content">Mantenha cópia por 5 anos conforme legislação</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
             summaryContent.innerHTML = summaryHTML;
-        }
-        
-        // Atualizar dados epidemiológicos
-        function updateEpidemiologicalData() {
-            const year = document.getElementById('date-select').value;
-            
-            // Dados fictícios baseados em estatísticas reais do Ministério da Saúde
-            const data = {
-                '2023': {
-                    totalDeaths: '1.450.000',
-                    naturalDeaths: '1.220.000',
-                    externalDeaths: '150.000',
-                    infantDeaths: '14.000'
-                },
-                '2022': {
-                    totalDeaths: '1.420.000',
-                    naturalDeaths: '1.190.000',
-                    externalDeaths: '148.000',
-                    infantDeaths: '14.500'
-                },
-                '2021': {
-                    totalDeaths: '1.550.000',
-                    naturalDeaths: '1.280.000',
-                    externalDeaths: '165.000',
-                    infantDeaths: '15.200'
-                }
-            };
-            
-            document.getElementById('total-deaths').textContent = data[year].totalDeaths;
-            document.getElementById('natural-deaths').textContent = data[year].naturalDeaths;
-            document.getElementById('external-deaths').textContent = data[year].externalDeaths;
-            document.getElementById('infant-deaths').textContent = data[year].infantDeaths;
-            
-            // Atualizar gráficos
-            updateCharts(year);
-        }
-        
-        // Atualizar gráficos
-        function updateCharts(year) {
-            // Dados fictícios para gráficos
-            const causesData = {
-                labels: ['Doenças Cardiovasculares', 'Neoplasias', 'Doenças Respiratórias', 'Causas Externas', 'Doenças Infecciosas', 'Outras'],
-                datasets: [{
-                    label: `Distribuição de Causas (${year})`,
-                    data: [28, 19, 12, 10, 8, 23],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.7)',
-                        'rgba(54, 162, 235, 0.7)',
-                        'rgba(255, 206, 86, 0.7)',
-                        'rgba(75, 192, 192, 0.7)',
-                        'rgba(153, 102, 255, 0.7)',
-                        'rgba(255, 159, 64, 0.7)'
-                    ]
-                }]
-            };
-            
-            const ageData = {
-                labels: ['<1 ano', '1-4 anos', '5-19 anos', '20-39 anos', '40-59 anos', '60+ anos'],
-                datasets: [{
-                    label: `Óbitos por Faixa Etária (${year})`,
-                    data: [2, 1, 5, 12, 25, 55],
-                    backgroundColor: 'rgba(100, 255, 218, 0.7)',
-                    borderColor: 'rgba(100, 255, 218, 1)',
-                    borderWidth: 1
-                }]
-            };
-            
-            // Destruir gráficos existentes
-            if (window.causesChart) window.causesChart.destroy();
-            if (window.ageChart) window.ageChart.destroy();
-            
-            // Gráfico de causas
-            const causesCtx = document.getElementById('causesChart').getContext('2d');
-            window.causesChart = new Chart(causesCtx, {
-                type: 'pie',
-                data: causesData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#fff'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Gráfico de faixa etária
-            const ageCtx = document.getElementById('ageChart').getContext('2d');
-            window.ageChart = new Chart(ageCtx, {
-                type: 'bar',
-                data: ageData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: '#fff'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#fff'
-                            },
-                            grid: {
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff'
-                            }
-                        }
-                    }
-                }
-            });
         }
         
         // Funções auxiliares para texto
@@ -2279,9 +2309,6 @@
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
-        
-        // Inicializar dados epidemiológicos
-        document.getElementById('date-select').addEventListener('change', updateEpidemiologicalData);
     </script>
 </body>
 </html>
