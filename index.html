@@ -20,6 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
@@ -52,6 +53,7 @@
             flex-direction: column;
             overflow-x: hidden;
             touch-action: manipulation;
+            overflow: hidden; /* Impede rolagem global */
         }
         
         .container {
@@ -178,7 +180,7 @@
             margin-bottom: 25px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             flex: 1;
-            overflow-y: auto;
+            overflow-y: auto; /* Permite rolagem apenas nesta área */
             max-height: 60vh;
         }
         
@@ -523,7 +525,7 @@
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
-            overflow-y: auto;
+            overflow-y: auto; /* Permite rolagem apenas nesta área */
             max-height: 60vh;
         }
         
@@ -590,12 +592,58 @@
             font-size: 24px;
         }
         
+        .flowchart {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .flowchart-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .flowchart-step:before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+        
+        .step-number {
+            background-color: var(--accent-blue);
+            color: var(--primary-dark);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
         footer {
             text-align: center;
             padding: 20px;
             font-size: 14px;
             color: var(--medium-gray);
             border-top: 1px solid rgba(100, 255, 218, 0.2);
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
         }
         
         @keyframes fadeIn {
@@ -884,69 +932,65 @@
                     <i class="fas fa-user-md"></i>
                 </div>
                 <div class="speech-bubble">
-                    <p class="speech-text">Aqui estão os dados epidemiológicos atualizados. Essas informações podem ajudar na vigilância em saúde.</p>
+                    <p class="speech-text">Dados epidemiológicos baseados nas últimas estatísticas do Ministério da Saúde.</p>
                 </div>
             </div>
             
             <div class="content">
-                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico</h2>
+                <h2 class="title"><i class="fas fa-chart-line"></i> Painel Epidemiológico - Ministério da Saúde</h2>
                 
                 <div class="form-group">
-                    <label for="date-select">Selecione a data:</label>
-                    <input type="date" id="date-select" class="form-control" value="2023-10-15">
+                    <label for="date-select">Selecione o ano:</label>
+                    <select id="date-select" class="form-control">
+                        <option value="2023">2023</option>
+                        <option value="2022">2022</option>
+                        <option value="2021">2021</option>
+                    </select>
                 </div>
                 
                 <div class="dash-container">
                     <div class="dash-card">
                         <h3><i class="fas fa-skull"></i> Total de Óbitos</h3>
-                        <div class="dash-value">142</div>
-                        <p>Registrados no dia selecionado</p>
+                        <div class="dash-value" id="total-deaths">1.450.000</div>
+                        <p>Registrados no ano selecionado</p>
                     </div>
                     
                     <div class="dash-card">
                         <h3><i class="fas fa-heartbeat"></i> Mortes Naturais</h3>
-                        <div class="dash-value">89</div>
-                        <p>Causas mais prevalentes:</p>
+                        <div class="dash-value" id="natural-deaths">1.220.000</div>
+                        <p>Principais causas:</p>
                         <ul class="dash-list">
-                            <li>Cardiovasculares <span>32%</span></li>
-                            <li>Neoplasias <span>28%</span></li>
-                            <li>Respiratórias <span>18%</span></li>
-                            <li>Outras <span>22%</span></li>
+                            <li>Doenças cardiovasculares <span>28%</span></li>
+                            <li>Neoplasias <span>19%</span></li>
+                            <li>Doenças respiratórias <span>12%</span></li>
                         </ul>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Mortes Suspeitas</h3>
-                        <div class="dash-value">24</div>
-                        <p>Principais origens:</p>
+                        <h3><i class="fas fa-exclamation-triangle"></i> Causas Externas</h3>
+                        <div class="dash-value" id="external-deaths">150.000</div>
+                        <p>Distribuição:</p>
                         <ul class="dash-list">
-                            <li>Infecções <span>42%</span></li>
-                            <li>Toxicológicas <span>25%</span></li>
-                            <li>Indeterminadas <span>33%</span></li>
+                            <li>Acidentes <span>45%</span></li>
+                            <li>Homicídios <span>35%</span></li>
+                            <li>Suicídios <span>20%</span></li>
                         </ul>
                     </div>
                     
                     <div class="dash-card">
-                        <h3><i class="fas fa-car-crash"></i> Mortes Violentas</h3>
-                        <div class="dash-value">29</div>
-                        <p>Distribuição por tipo:</p>
-                        <ul class="dash-list">
-                            <li>Acidentes <span>48%</span></li>
-                            <li>Suicídios <span>24%</span></li>
-                            <li>Homicídios <span>28%</span></li>
-                        </ul>
+                        <h3><i class="fas fa-baby"></i> Mortalidade Infantil</h3>
+                        <div class="dash-value" id="infant-deaths">14.000</div>
+                        <p>Taxa: 12,4 por mil nascidos vivos</p>
+                        <p>Principais causas: afecções perinatais (55%)</p>
                     </div>
-                    
-                    <div class="dash-card">
-                        <h3><i class="fas fa-file-medical"></i> Origem das DOs</h3>
-                        <div class="dash-value">142</div>
-                        <p>Distribuição por origem:</p>
-                        <ul class="dash-list">
-                            <li>Médico assistente <span>62%</span></li>
-                            <li>SVO <span>22%</span></li>
-                            <li>IML <span>16%</span></li>
-                        </ul>
-                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="causesChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="ageChart"></canvas>
                 </div>
             </div>
             
@@ -1051,7 +1095,7 @@
             </button>
         </section>
         
-        <!-- Nova Tela 8: Resumo da DO -->
+        <!-- Tela 8: Resumo da DO -->
         <section id="summary-screen" class="screen">
             <header>
                 <div class="logo" onclick="navigateTo('welcome-screen')">
@@ -1068,7 +1112,7 @@
                     <i class="fas fa-user-md"></i>
                 </div>
                 <div class="speech-bubble">
-                    <p class="speech-text">Resumo da Declaração de Óbito preenchida.</p>
+                    <p class="speech-text">Resumo da Declaração de Óbito preenchida com fluxograma de orientação.</p>
                 </div>
             </div>
             
@@ -1143,6 +1187,7 @@
                     </div>
                 `,
                 buttons: [
+                    { text: "Voltar", action: "backToAction", icon: "arrow-left" },
                     { text: "Próximo", action: "nextSection", icon: "arrow-right" }
                 ]
             },
@@ -1557,6 +1602,16 @@
             if (screenId === 'history-screen') {
                 loadHistory();
             }
+            
+            // Atualiza dados epidemiológicos quando entrar na tela de dados
+            if (screenId === 'data-screen') {
+                updateEpidemiologicalData();
+            }
+        }
+        
+        // Voltar para tela de ação
+        function backToAction() {
+            navigateTo('action-screen');
         }
         
         // Definir tipo de usuário
@@ -1602,12 +1657,13 @@
             buttonsContainer.innerHTML = '';
             section.buttons.forEach(btn => {
                 const button = document.createElement('button');
-                button.className = `btn ${btn.action === 'prevSection' ? 'back-btn' : ''}`;
+                button.className = `btn ${btn.action === 'prevSection' || btn.action === 'backToAction' ? 'back-btn' : ''}`;
                 button.innerHTML = `<i class="fas fa-${btn.icon}"></i> ${btn.text}`;
                 button.onclick = function() {
                     if (btn.action === 'nextSection') nextSection();
                     else if (btn.action === 'prevSection') prevSection();
                     else if (btn.action === 'showSummary') showSummary();
+                    else if (btn.action === 'backToAction') backToAction();
                 };
                 buttonsContainer.appendChild(button);
             });
@@ -1637,71 +1693,71 @@
             const formData = {};
             
             // Bloco I
-            formData.patientName = document.getElementById('patient-name').value || 'Não informado';
-            formData.patientDoc = document.getElementById('patient-doc').value || 'Não informado';
-            formData.motherName = document.getElementById('mother-name').value || 'Não informado';
-            formData.fatherName = document.getElementById('father-name').value || 'Não informado';
-            formData.birthDate = document.getElementById('birth-date').value || 'Não informado';
-            formData.deathDate = document.getElementById('death-date').value || 'Não informado';
+            formData.patientName = document.getElementById('patient-name')?.value || 'Não informado';
+            formData.patientDoc = document.getElementById('patient-doc')?.value || 'Não informado';
+            formData.motherName = document.getElementById('mother-name')?.value || 'Não informado';
+            formData.fatherName = document.getElementById('father-name')?.value || 'Não informado';
+            formData.birthDate = document.getElementById('birth-date')?.value || 'Não informado';
+            formData.deathDate = document.getElementById('death-date')?.value || 'Não informado';
             
             // Bloco II
-            formData.resStreet = document.getElementById('res-street').value || 'Não informado';
-            formData.resNumber = document.getElementById('res-number').value || 'Não informado';
-            formData.resComplement = document.getElementById('res-complement').value || 'Não informado';
-            formData.resDistrict = document.getElementById('res-district').value || 'Não informado';
-            formData.resCity = document.getElementById('res-city').value || 'Não informado';
-            formData.resState = document.getElementById('res-state').value || 'Não informado';
-            formData.resCep = document.getElementById('res-cep').value || 'Não informado';
+            formData.resStreet = document.getElementById('res-street')?.value || 'Não informado';
+            formData.resNumber = document.getElementById('res-number')?.value || 'Não informado';
+            formData.resComplement = document.getElementById('res-complement')?.value || 'Não informado';
+            formData.resDistrict = document.getElementById('res-district')?.value || 'Não informado';
+            formData.resCity = document.getElementById('res-city')?.value || 'Não informado';
+            formData.resState = document.getElementById('res-state')?.value || 'Não informado';
+            formData.resCep = document.getElementById('res-cep')?.value || 'Não informado';
             
             // Bloco III
-            formData.deathPlace = document.getElementById('death-place').value || 'Não informado';
-            formData.deathInstitution = document.getElementById('death-institution').value || 'Não informado';
-            formData.deathAddress = document.getElementById('death-address').value || 'Não informado';
-            formData.deathCity = document.getElementById('death-city').value || 'Não informado';
-            formData.deathState = document.getElementById('death-state').value || 'Não informado';
-            formData.violentDeath = document.getElementById('violent-death').checked ? 'Sim' : 'Não';
+            formData.deathPlace = document.getElementById('death-place')?.value || 'Não informado';
+            formData.deathInstitution = document.getElementById('death-institution')?.value || 'Não informado';
+            formData.deathAddress = document.getElementById('death-address')?.value || 'Não informado';
+            formData.deathCity = document.getElementById('death-city')?.value || 'Não informado';
+            formData.deathState = document.getElementById('death-state')?.value || 'Não informado';
+            formData.violentDeath = document.getElementById('violent-death')?.checked ? 'Sim' : 'Não';
             
             // Bloco IV
-            formData.motherAge = document.getElementById('mother-age').value || 'Não aplicável';
-            formData.pregnancy = document.getElementById('pregnancy').value || 'Não aplicável';
-            formData.dnNumber = document.getElementById('dn-number').value || 'Não aplicável';
-            formData.birthWeight = document.getElementById('birth-weight').value || 'Não aplicável';
-            formData.prenatal = document.getElementById('prenatal').value || 'Não aplicável';
-            formData.deliveryType = document.getElementById('delivery-type').value || 'Não aplicável';
+            formData.motherAge = document.getElementById('mother-age')?.value || 'Não aplicável';
+            formData.pregnancy = document.getElementById('pregnancy')?.value || 'Não aplicável';
+            formData.dnNumber = document.getElementById('dn-number')?.value || 'Não aplicável';
+            formData.birthWeight = document.getElementById('birth-weight')?.value || 'Não aplicável';
+            formData.prenatal = document.getElementById('prenatal')?.value || 'Não aplicável';
+            formData.deliveryType = document.getElementById('delivery-type')?.value || 'Não aplicável';
             
             // Bloco V
-            formData.immediateCause = document.getElementById('immediate-cause').value || 'Não informado';
-            formData.antecedentCause = document.getElementById('antecedent-cause').value || 'Não informado';
-            formData.underlyingCause = document.getElementById('underlying-cause').value || 'Não informado';
-            formData.otherConditions = document.getElementById('other-conditions').value || 'Não informado';
-            formData.deathManner = document.getElementById('death-manner').value || 'Não informado';
+            formData.immediateCause = document.getElementById('immediate-cause')?.value || 'Não informado';
+            formData.antecedentCause = document.getElementById('antecedent-cause')?.value || 'Não informado';
+            formData.underlyingCause = document.getElementById('underlying-cause')?.value || 'Não informado';
+            formData.otherConditions = document.getElementById('other-conditions')?.value || 'Não informado';
+            formData.deathManner = document.getElementById('death-manner')?.value || 'Não informado';
             
             // Bloco VI
-            formData.doctorName = document.getElementById('doctor-name').value || 'Não informado';
-            formData.doctorCrm = document.getElementById('doctor-crm').value || 'Não informado';
-            formData.doctorUf = document.getElementById('doctor-uf').value || 'Não informado';
-            formData.signatureDate = document.getElementById('signature-date').value || 'Não informado';
+            formData.doctorName = document.getElementById('doctor-name')?.value || 'Não informado';
+            formData.doctorCrm = document.getElementById('doctor-crm')?.value || 'Não informado';
+            formData.doctorUf = document.getElementById('doctor-uf')?.value || 'Não informado';
+            formData.signatureDate = document.getElementById('signature-date')?.value || 'Não informado';
             
             // Bloco VII
-            formData.accidentDate = document.getElementById('accident-date').value || 'Não aplicável';
-            formData.accidentTime = document.getElementById('accident-time').value || 'Não aplicável';
-            formData.accidentPlace = document.getElementById('accident-place').value || 'Não aplicável';
-            formData.accidentType = document.getElementById('accident-type').value || 'Não aplicável';
-            formData.accidentDescription = document.getElementById('accident-description').value || 'Não aplicável';
+            formData.accidentDate = document.getElementById('accident-date')?.value || 'Não aplicável';
+            formData.accidentTime = document.getElementById('accident-time')?.value || 'Não aplicável';
+            formData.accidentPlace = document.getElementById('accident-place')?.value || 'Não aplicável';
+            formData.accidentType = document.getElementById('accident-type')?.value || 'Não aplicável';
+            formData.accidentDescription = document.getElementById('accident-description')?.value || 'Não aplicável';
             
             // Bloco VIII
-            formData.registryOffice = document.getElementById('registry-office').value || 'Não informado';
-            formData.registryCity = document.getElementById('registry-city').value || 'Não informado';
-            formData.registryUf = document.getElementById('registry-uf').value || 'Não informado';
-            formData.registryDate = document.getElementById('registry-date').value || 'Não informado';
+            formData.registryOffice = document.getElementById('registry-office')?.value || 'Não informado';
+            formData.registryCity = document.getElementById('registry-city')?.value || 'Não informado';
+            formData.registryUf = document.getElementById('registry-uf')?.value || 'Não informado';
+            formData.registryDate = document.getElementById('registry-date')?.value || 'Não informado';
             
             // Bloco IX
-            formData.declarantName = document.getElementById('declarant-name').value || 'Não aplicável';
-            formData.declarantDoc = document.getElementById('declarant-doc').value || 'Não aplicável';
-            formData.witness1Name = document.getElementById('witness1-name').value || 'Não aplicável';
-            formData.witness1Doc = document.getElementById('witness1-doc').value || 'Não aplicável';
-            formData.witness2Name = document.getElementById('witness2-name').value || 'Não aplicável';
-            formData.witness2Doc = document.getElementById('witness2-doc').value || 'Não aplicável';
+            formData.declarantName = document.getElementById('declarant-name')?.value || 'Não aplicável';
+            formData.declarantDoc = document.getElementById('declarant-doc')?.value || 'Não aplicável';
+            formData.witness1Name = document.getElementById('witness1-name')?.value || 'Não aplicável';
+            formData.witness1Doc = document.getElementById('witness1-doc')?.value || 'Não aplicável';
+            formData.witness2Name = document.getElementById('witness2-name')?.value || 'Não aplicável';
+            formData.witness2Doc = document.getElementById('witness2-doc')?.value || 'Não aplicável';
             
             return formData;
         }
@@ -1910,7 +1966,166 @@
                 `;
             }
             
+            // Adicionar fluxograma de orientação
+            summaryHTML += `
+                <div class="summary-section">
+                    <h3><i class="fas fa-project-diagram"></i> Fluxograma de Orientação</h3>
+                    <div class="flowchart">
+                        <div class="flowchart-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">Verifique a identidade do falecido com documento oficial e confirme com familiar</div>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">Determine a causa básica da morte seguindo a sequência: causa básica → causa antecedente → causa imediata</div>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">Em caso de morte violenta/suspeita: notifique autoridades e preencha bloco VII</div>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">Para mulheres em idade fértil ou crianças: preencha bloco IV</div>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">Assine e registre no cartório em até 24 horas</div>
+                        </div>
+                        <div class="flowchart-step">
+                            <div class="step-number">6</div>
+                            <div class="step-content">Mantenha cópia por 5 anos conforme legislação</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
             summaryContent.innerHTML = summaryHTML;
+        }
+        
+        // Atualizar dados epidemiológicos
+        function updateEpidemiologicalData() {
+            const year = document.getElementById('date-select').value;
+            
+            // Dados fictícios baseados em estatísticas reais do Ministério da Saúde
+            const data = {
+                '2023': {
+                    totalDeaths: '1.450.000',
+                    naturalDeaths: '1.220.000',
+                    externalDeaths: '150.000',
+                    infantDeaths: '14.000'
+                },
+                '2022': {
+                    totalDeaths: '1.420.000',
+                    naturalDeaths: '1.190.000',
+                    externalDeaths: '148.000',
+                    infantDeaths: '14.500'
+                },
+                '2021': {
+                    totalDeaths: '1.550.000',
+                    naturalDeaths: '1.280.000',
+                    externalDeaths: '165.000',
+                    infantDeaths: '15.200'
+                }
+            };
+            
+            document.getElementById('total-deaths').textContent = data[year].totalDeaths;
+            document.getElementById('natural-deaths').textContent = data[year].naturalDeaths;
+            document.getElementById('external-deaths').textContent = data[year].externalDeaths;
+            document.getElementById('infant-deaths').textContent = data[year].infantDeaths;
+            
+            // Atualizar gráficos
+            updateCharts(year);
+        }
+        
+        // Atualizar gráficos
+        function updateCharts(year) {
+            // Dados fictícios para gráficos
+            const causesData = {
+                labels: ['Doenças Cardiovasculares', 'Neoplasias', 'Doenças Respiratórias', 'Causas Externas', 'Doenças Infecciosas', 'Outras'],
+                datasets: [{
+                    label: `Distribuição de Causas (${year})`,
+                    data: [28, 19, 12, 10, 8, 23],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(153, 102, 255, 0.7)',
+                        'rgba(255, 159, 64, 0.7)'
+                    ]
+                }]
+            };
+            
+            const ageData = {
+                labels: ['<1 ano', '1-4 anos', '5-19 anos', '20-39 anos', '40-59 anos', '60+ anos'],
+                datasets: [{
+                    label: `Óbitos por Faixa Etária (${year})`,
+                    data: [2, 1, 5, 12, 25, 55],
+                    backgroundColor: 'rgba(100, 255, 218, 0.7)',
+                    borderColor: 'rgba(100, 255, 218, 1)',
+                    borderWidth: 1
+                }]
+            };
+            
+            // Destruir gráficos existentes
+            if (window.causesChart) window.causesChart.destroy();
+            if (window.ageChart) window.ageChart.destroy();
+            
+            // Gráfico de causas
+            const causesCtx = document.getElementById('causesChart').getContext('2d');
+            window.causesChart = new Chart(causesCtx, {
+                type: 'pie',
+                data: causesData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de faixa etária
+            const ageCtx = document.getElementById('ageChart').getContext('2d');
+            window.ageChart = new Chart(ageCtx, {
+                type: 'bar',
+                data: ageData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#fff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#fff'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#fff'
+                            }
+                        }
+                    }
+                }
+            });
         }
         
         // Funções auxiliares para texto
@@ -2064,6 +2279,9 @@
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
+        
+        // Inicializar dados epidemiológicos
+        document.getElementById('date-select').addEventListener('change', updateEpidemiologicalData);
     </script>
 </body>
 </html>
