@@ -959,6 +959,23 @@
         </div>
     </div>
     
+    <!-- Novo: Modal de instalação PWA -->
+    <div id="installModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeInstallModal()">&times;</button>
+            <h2 class="modal-title">Instalar D.O Fácil</h2>
+            <p>Você quer instalar o aplicativo D.O Fácil no seu dispositivo? Isso permitirá que você acesse rapidamente e use offline.</p>
+            <div class="btn-container">
+                <button class="btn" id="installButton">
+                    <i class="fas fa-download"></i> Instalar
+                </button>
+                <button class="btn option-btn" onclick="dismissInstallModal()">
+                    <i class="fas fa-times"></i> Não, obrigado
+                </button>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
         <!-- Tela 1: Boas-Vindas -->
         <section id="welcome-screen" class="screen active">
@@ -1936,6 +1953,10 @@
         let history = JSON.parse(localStorage.getItem('doHistory')) || [];
         let currentDOData = null;
         
+        // Variáveis para instalação PWA
+        let deferredPrompt;
+        const installModal = document.getElementById('installModal');
+        
         // Funções para o modal de informações
         function openModal() {
             document.getElementById('infoModal').style.display = 'flex';
@@ -1945,13 +1966,64 @@
             document.getElementById('infoModal').style.display = 'none';
         }
         
-        // Fechar modal ao clicar fora do conteúdo
+        // Funções para o modal de instalação
+        function openInstallModal() {
+            installModal.style.display = 'flex';
+        }
+        
+        function closeInstallModal() {
+            installModal.style.display = 'none';
+        }
+        
+        function dismissInstallModal() {
+            localStorage.setItem('pwaInstallDismissed', 'true');
+            closeInstallModal();
+        }
+        
+        // Fechar modais ao clicar fora do conteúdo
         window.onclick = function(event) {
-            const modal = document.getElementById('infoModal');
-            if (event.target === modal) {
+            const infoModal = document.getElementById('infoModal');
+            if (event.target === infoModal) {
                 closeModal();
             }
+            if (event.target === installModal) {
+                closeInstallModal();
+            }
         };
+        
+        // Evento de instalação PWA
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Verificar se já foi descartado
+            const isDismissed = localStorage.getItem('pwaInstallDismissed');
+            if (!isDismissed) {
+                setTimeout(() => {
+                    openInstallModal();
+                }, 3000);
+            }
+        });
+        
+        // Botão de instalação
+        document.getElementById('installButton').addEventListener('click', () => {
+            closeInstallModal();
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('Usuário aceitou a instalação');
+                } else {
+                    console.log('Usuário rejeitou a instalação');
+                }
+                deferredPrompt = null;
+            });
+        });
+        
+        // Confirmar instalação
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA instalado');
+            closeInstallModal();
+        });
         
         // Navegação entre telas
         function navigateTo(screenId) {
